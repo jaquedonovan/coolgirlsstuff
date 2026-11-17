@@ -74,13 +74,22 @@ No `config.toml`, troque `nome` e `shop_id` das duas lojas. O robô olha todas a
 
 ---
 
+## Cupons
+Os cupons ficam no arquivo `cupons.toml`. Para colocar um cupom novo:
+1. Abra o `cupons.toml` aqui no GitHub e clique no lápis.
+2. Copie um bloco `[[cupom]]`, cole no final e troque loja, código, título, regra, **seu link de afiliada** e validade.
+3. Clique em **Commit changes**. Em 1 ou 2 minutos o cupom aparece no site e no painel, com a mensagem pronta pro grupo.
+
+Cupom vencido some sozinho no dia seguinte à validade. O bloco de exemplo (com `exemplo = true`) não aparece no site; pode apagar.
+
 ## Ajustes do dia a dia
 Abra o `config.toml` aqui no GitHub (ícone de lápis), mude e clique em **Commit changes**. O robô roda na hora com a configuração nova.
 
 - `desconto_minimo`: suba se estiver entrando oferta demais; desça se estiver vazio.
 - `buscas`: as palavras que o robô procura. Ponha marcas que você ama (ex.: `"cosrx"`, `"la roche-posay"`).
 - `palavras_proibidas`: o que nunca pode aparecer.
-- `link_do_grupo`: o convite do grupo, que vai no fim das mensagens e no botão do site.
+- `link_do_grupo`: o convite do grupo, que vai no fim das mensagens e na barra do topo do site.
+- `instagram` e `tiktok`: os links dos seus perfis, que aparecem no rodapé do site.
 
 ## Se algo der errado
 **Actions** › clique na última execução › **Buscar ofertas**. O robô escreve em português o que conseguiu e o que faltou.

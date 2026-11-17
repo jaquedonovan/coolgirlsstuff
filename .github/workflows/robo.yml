@@ -6,7 +6,7 @@ on:
   workflow_dispatch:             # botão "Run workflow" pra rodar na hora
   push:
     branches: [main]
-    paths: ["config.toml", "docs/index.html", "robo/**"]
+    paths: ["config.toml", "cupons.toml", "docs/index.html", "robo/**"]
 
 permissions:
   contents: write

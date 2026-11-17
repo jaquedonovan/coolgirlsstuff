@@ -24,6 +24,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 CONFIG = RAIZ / "config.toml"
+CUPONS = RAIZ / "cupons.toml"
 SAIDA = RAIZ / "docs" / "ofertas.json"
 NOVO_REFRESH_ML = RAIZ / ".ml_refresh_token_novo"
 
@@ -301,6 +302,49 @@ def mensagem(o, g):
     return "\n".join(L)
 
 
+# ───────────────────────── CUPONS ─────────────────────────
+def ler_cupons(g):
+    if not CUPONS.exists():
+        return []
+    try:
+        lista = tomllib.loads(CUPONS.read_text(encoding="utf-8")).get("cupom", [])
+    except Exception as e:
+        log(f"cupons.toml com erro de digitação, cupons não atualizados: {e}")
+        return None
+    hoje = time.strftime("%Y-%m-%d", time.localtime(AGORA - 3 * 3600))  # horário de Brasília
+    out = []
+    for i, c in enumerate(lista):
+        if c.get("exemplo") or not c.get("loja") or not c.get("titulo"):
+            continue
+        link = str(c.get("link") or "")
+        if not link.startswith("https://"):
+            log(f"Cupom '{c.get('titulo')}' sem link https, ignorado.")
+            continue
+        val = str(c.get("validade") or "")
+        if val and val < hoje:
+            continue
+        cp = {
+            "id": "cp-" + hashlib.sha1(f"{c['loja']}|{c.get('codigo','')}|{c['titulo']}".encode()).hexdigest()[:10],
+            "loja": str(c["loja"]).strip(), "codigo": str(c.get("codigo") or "").strip().upper(),
+            "titulo": str(c["titulo"]).strip(), "regra": str(c.get("regra") or "").strip(),
+            "link": link, "validade": val, "destaque": bool(c.get("destaque")), "ordem": i,
+        }
+        L = [f"🎟️ *CUPOM {cp['loja'].upper()}*", "", f"✨ *{cp['titulo']}*"]
+        if cp["regra"]:
+            L.append(cp["regra"])
+        if cp["codigo"]:
+            L += ["", f"🔑 Código: *{cp['codigo']}*"]
+        if val:
+            d = val.split("-")
+            L.append(f"📅 Válido até {d[2]}/{d[1]}")
+        L += ["", f"👉 {'Use aqui' if cp['codigo'] else 'Resgate aqui'}: {link}", "", g.get("aviso_afiliada", "#publi")]
+        cp["msg"] = "\n".join(L)
+        out.append(cp)
+    out.sort(key=lambda c: (not c["destaque"], c["ordem"]))
+    log(f"Cupons: {len(out)} válidos.")
+    return out
+
+
 # ───────────────────────── PRINCIPAL ─────────────────────────
 def main():
     cfg = tomllib.loads(CONFIG.read_text(encoding="utf-8"))
@@ -309,12 +353,17 @@ def main():
     favs = [l for l in sc.get("lojas_favoritas", []) if int(l.get("shop_id") or 0) > 0]
     favs_ids = {int(l["shop_id"]) for l in favs}
 
-    antigo = {}
+    antigo, cupons_antigos = {}, []
     if SAIDA.exists():
         try:
-            antigo = {o["id"]: o for o in json.loads(SAIDA.read_text(encoding="utf-8")).get("ofertas", [])}
+            velho_json = json.loads(SAIDA.read_text(encoding="utf-8"))
+            antigo = {o["id"]: o for o in velho_json.get("ofertas", [])}
+            cupons_antigos = velho_json.get("cupons", [])
         except Exception:
             log("ofertas.json antigo ilegível; começando do zero.")
+    cupons = ler_cupons(g)
+    if cupons is None:
+        cupons = cupons_antigos
 
     fontes = {
         "shopee": shopee_buscar(cfg, favs_ids) if sc.get("ligado") else None,
@@ -355,6 +404,9 @@ def main():
         "atualizado_em": AGORA,
         "grupo": g["nome_do_grupo"],
         "link_do_grupo": g.get("link_do_grupo", ""),
+        "instagram": g.get("instagram", ""),
+        "tiktok": g.get("tiktok", ""),
+        "cupons": cupons,
         "lojas_favoritas": [{"nome": l["nome"], "shop_id": int(l["shop_id"])} for l in favs],
         "fontes": {k: (v is not None) for k, v in fontes.items()},
         "ofertas": lista,

@@ -3,58 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>COOL GIRLS STUFF · achadinhos de beleza</title>
-<meta name="description" content="Promoções de beleza selecionadas na Shopee, no Mercado Livre e na Amazon, atualizadas o dia todo.">
+<title>COOL GIRLS STUFF · achadinhos e cupons de beleza</title>
+<meta name="description" content="Promoções e cupons de beleza na Shopee, no Mercado Livre e na Amazon, garimpados o dia todo.">
 <meta property="og:title" content="COOL GIRLS STUFF">
-<meta property="og:description" content="Achadinhos de beleza com desconto, atualizados o dia todo.">
+<meta property="og:description" content="Achadinhos e cupons de beleza, atualizados o dia todo.">
 <meta name="theme-color" content="#ebcfc8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: quiet luxury beauty counter, short confident Portuguese.
-   IDEA: a boutique shelf of price tags; every card is a product with its tag.
-   PICTURE: the live vitrine itself, offers grid right under the logo.
+   IDEA: a boutique's front window: hot offers on the shelf, coupons as torn tickets.
+   PICTURE: the hottest offer as a large hero card under the store row.
    COLOUR+TYPE: rosa chá fields, cocoa-plum ink, antique rose accent; night cocoa. Bodoni Moda + Figtree.
-   LAYOUT: logo band, sticky filters, grid; a private #painel view lists messages to copy. */
+   LAYOUT: group bar, header with menu, store row, hot offers, coupons, offers grid; views by hash. */
 :root{color-scheme:light dark;
 --bg:light-dark(#f8eeeb,#1d1517);--panel:light-dark(#fffaf8,#2a2023);--ink:light-dark(#3a2630,#f5e6e2);
 --soft:light-dark(#86686f,#c9aeb1);--line:light-dark(#ecd6d1,#45343a);--rose:light-dark(#b5707c,#d9a3a8);--rosed:light-dark(#99525f,#e3b4b8);
---blush:light-dark(#f2dfda,#382a2e);--tea:light-dark(#ebcfc8,#2f2226);--wa:light-dark(#eef7e8,#24302a)}
+--blush:light-dark(#f2dfda,#382a2e);--tea:light-dark(#ebcfc8,#2f2226);--wa:light-dark(#eef7e8,#24302a);--onrose:light-dark(#fff,#1d1517)}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif;overflow-x:clip}
 button,input,select{font:inherit;color:inherit}
-.band{padding:clamp(20px,3vw,40px) max(5vw,16px)}
+a{color:inherit}
 .wrap{max-width:1240px;margin:0 auto}
-header{background:var(--tea)}
-header .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 24px}
-.logo{font:500 clamp(34px,6vw,60px)/1 "Bodoni Moda",Didot,Georgia,serif;margin:0;letter-spacing:.03em}
-.tag{margin:10px 0 0;color:var(--soft);font-weight:500}
-.hright{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.live{display:flex;align-items:center;gap:8px;font-weight:700;background:var(--panel);padding:8px 14px;border-radius:99px;white-space:nowrap;font-size:15px}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--rose);animation:pulse 1.8s infinite}
-@keyframes pulse{50%{opacity:.35}}
-.join{background:var(--ink);color:var(--bg);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:99px;min-height:44px;display:inline-flex;align-items:center}
-.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:0 max(5vw,16px)}
-.bar .wrap{padding:12px 0;display:grid;gap:10px}
-.code{max-width:1240px;margin:16px auto 0;background:var(--panel);border:2px solid var(--rose);border-radius:16px;padding:14px 16px}.code code{font-size:18px;font-weight:800;overflow-wrap:anywhere}
-.filters{display:flex;flex-wrap:wrap;gap:10px}
-.search{flex:1 1 240px;height:46px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);padding:0 16px;font-size:16px}
-select{height:46px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);padding:0 12px;font-size:16px}
-.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.chip{flex:none;border:1.5px solid var(--line);background:var(--panel);border-radius:99px;padding:8px 16px;font-weight:600;cursor:pointer;min-height:42px}
-.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.chip.k{border-color:var(--rose);color:var(--rosed)}.chip.k.on{background:var(--rose);color:light-dark(#fff,#1d1517)}
+.pad{padding-inline:max(5vw,16px)}
+h2{font:600 clamp(24px,3vw,32px)/1.15 "Bodoni Moda",Georgia,serif;margin:0}
+.sec{padding-block:clamp(24px,3.5vw,44px)}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:16px}
+.seeall{font-weight:700;color:var(--rosed);text-underline-offset:4px;white-space:nowrap}
 :focus-visible{outline:3px solid var(--rosed);outline-offset:2px}
-.count{font-size:14px;color:var(--soft);margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:18px}
-.card{background:var(--panel);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--line),0 12px 28px -20px rgba(80,40,50,.4);text-decoration:none;color:inherit;transition:transform .2s}
-.card:hover{transform:translateY(-3px)}
-.ph{position:relative;aspect-ratio:1;background:#fff;display:grid;place-items:center}
+/* barra do grupo + topo */
+.groupbar{background:var(--ink);color:var(--bg)}
+.groupbar .wrap{display:flex;justify-content:center;align-items:center;gap:8px 18px;flex-wrap:wrap;padding-block:10px;font-weight:600;text-align:center}
+.groupbar a{background:var(--rose);color:var(--onrose);text-decoration:none;font-weight:800;padding:8px 18px;border-radius:99px;min-height:40px;display:inline-flex;align-items:center}
+header{background:var(--tea)}
+header .wrap{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px 28px;padding-block:18px}
+header nav.menu{order:2;flex-wrap:nowrap;justify-content:center}nav.menu a{white-space:nowrap}header .hsearch{order:3}.hsearch .search{width:280px}
+.logo{font:500 clamp(26px,3.4vw,40px)/1 "Bodoni Moda",Didot,Georgia,serif;margin:0;letter-spacing:.03em;text-decoration:none;white-space:nowrap}
+nav.menu{display:flex;gap:4px 22px;flex-wrap:wrap}
+nav.menu a{text-decoration:none;font-weight:700;color:var(--rosed);padding:8px 0;min-height:40px;display:inline-flex;align-items:center;border-bottom:2px solid transparent}
+nav.menu a[aria-current]{border-color:var(--rosed)}
+.hsearch{display:flex;gap:8px;align-items:center}
+.search{width:100%;height:46px;border-radius:99px;border:1.5px solid var(--line);background:var(--panel);padding:0 18px;font-size:16px}
+.hsearch .search{width:min(320px,40vw)}
+.social{display:flex;gap:6px}
+.social a{font-size:14px;font-weight:700;text-decoration:none;padding:10px 16px;border-radius:99px;background:var(--panel);color:var(--ink);white-space:nowrap;min-height:44px;display:inline-flex;align-items:center}
+.live{font-size:14px;color:var(--soft);display:flex;align-items:center;gap:8px;margin-top:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--rose);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.3}}
+/* lojas */
+.stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:12px}
+.storecard{display:flex;gap:12px;align-items:center;background:var(--panel);border:0;border-radius:16px;padding:12px 14px;text-align:start;cursor:pointer;min-height:68px;box-shadow:0 1px 0 var(--line)}
+.storecard:hover{box-shadow:0 0 0 1.5px var(--rose)}
+.mono{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font:600 18px/1 "Bodoni Moda",Georgia,serif;color:#3a2630}
+.storecard b{display:block;line-height:1.2}.storecard span{font-size:14px;color:var(--soft)}
+/* ofertas quentes */
+.hot{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:18px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--panel);border-radius:22px;overflow:hidden;text-decoration:none;box-shadow:0 12px 30px -22px rgba(80,40,50,.5)}
+.hero .ph{aspect-ratio:auto;min-height:320px}
+.hero .body{padding:clamp(18px,2.5vw,32px);justify-content:center;gap:8px}
+.hero .title{font:600 clamp(22px,2.4vw,30px)/1.15 "Bodoni Moda",Georgia,serif;-webkit-line-clamp:4}
+.hero .por{font-size:34px}
+/* cards de oferta */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:18px}
+.card{background:var(--panel);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--line),0 12px 28px -20px rgba(80,40,50,.4);text-decoration:none;transition:transform .2s}
+.card:hover,.hero:hover{transform:translateY(-3px)}
+.ph{position:relative;aspect-ratio:1;background:#fff;display:grid;place-items:center;overflow:hidden}
 .ph img{width:100%;height:100%;object-fit:contain}
 .ph svg{width:44%;height:44%}.ph.noimg{background:var(--blush)}
 .pill{position:absolute;font-size:13px;font-weight:800;padding:4px 10px;border-radius:99px;white-space:nowrap}
 .store{top:10px;left:10px;background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
-.off{top:10px;right:10px;background:var(--rose);color:light-dark(#fff,#1d1517)}
+.off{top:10px;right:10px;background:var(--rose);color:var(--onrose)}
 .flag{bottom:10px;left:10px;background:var(--ink);color:var(--bg)}
 .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
 .cat{font-size:13px;font-weight:700;color:var(--rosed)}
@@ -62,62 +80,130 @@ select{height:46px;border-radius:14px;border:1.5px solid var(--line);background:
 .de{font-size:14px;color:var(--soft);text-decoration:line-through;white-space:nowrap}
 .por{font-size:24px;font-weight:800;white-space:nowrap;line-height:1.1}
 .small{font-size:14px;color:var(--soft)}
-.buy{margin-top:auto;background:var(--ink);color:var(--bg);border-radius:12px;min-height:44px;display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:10px}
-.empty{grid-column:1/-1;background:var(--panel);border:2px dashed var(--line);border-radius:20px;padding:44px 24px;text-align:center;color:var(--soft)}
-.empty b{display:block;color:var(--ink);font:600 24px/1.2 "Bodoni Moda",Georgia,serif;margin-bottom:8px}
+.buy{margin-top:auto;background:var(--ink);color:var(--bg);border-radius:12px;min-height:44px;display:flex;align-items:center;justify-content:center;font-weight:700;padding-inline:18px}
+.hero .buy{margin-top:12px;align-self:flex-start}
+/* cupons */
+.coupons{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:16px}
+.coupon{position:relative;display:grid;grid-template-columns:96px minmax(0,1fr);background:var(--panel);border-radius:18px;box-shadow:0 1px 0 var(--line)}
+.coupon::before,.coupon::after{content:"";position:absolute;left:84px;width:24px;height:24px;border-radius:50%;background:var(--bg)}
+.coupon::before{top:-12px}.coupon::after{bottom:-12px}
+.cleft{display:grid;place-items:center;align-content:center;gap:6px;padding:16px 8px;border-right:2px dashed var(--line);text-align:center;font-size:13px;font-weight:700}
+.cleft .mono{width:52px;height:52px}
+.cbody{padding:16px 18px;display:grid;gap:4px}
+.cbody .ct{font:600 21px/1.2 "Bodoni Moda",Georgia,serif}
+.cmeta{font-size:14px;color:var(--soft)}
+.cbtn{justify-self:start;margin-top:8px;position:relative;display:inline-flex;align-items:stretch;border:0;padding:0;background:none;cursor:pointer;min-height:46px}
+.cbtn .lbl{background:var(--rose);color:var(--onrose);font-weight:800;padding:0 22px;border-radius:12px 0 0 12px;display:flex;align-items:center;position:relative;z-index:1}
+.cbtn .peek{border:2px dashed var(--rose);border-left:0;border-radius:0 12px 12px 0;padding:0 14px 0 20px;margin-left:-8px;display:flex;align-items:center;font-weight:800;letter-spacing:.06em;color:var(--rosed)}
+.cbtn.nocode .lbl{border-radius:12px}
+/* chips e filtros */
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar .wrap{padding-block:12px;display:grid;gap:10px}
+.filters{display:flex;flex-wrap:wrap;gap:10px}
+.filters .search{flex:1 1 240px;border-radius:14px}
+select{height:46px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);padding:0 12px;font-size:16px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--panel);border-radius:99px;padding:8px 16px;font-weight:600;cursor:pointer;min-height:42px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.k{border-color:var(--rose);color:var(--rosed)}.chip.k.on{background:var(--rose);color:var(--onrose)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:14px}
+.cattile{background:var(--panel);border:0;border-radius:18px;padding:22px 18px;text-align:start;cursor:pointer;display:grid;gap:4px;box-shadow:0 1px 0 var(--line);min-height:110px}
+.cattile b{font:600 22px/1.15 "Bodoni Moda",Georgia,serif}.cattile span{color:var(--soft);font-size:14px}
+.cattile:hover{box-shadow:0 0 0 1.5px var(--rose)}
+.count{font-size:14px;color:var(--soft);margin:0 0 14px}
+.empty{grid-column:1/-1;background:var(--panel);border:2px dashed var(--line);border-radius:20px;padding:40px 24px;text-align:center;color:var(--soft)}
+.empty b{display:block;color:var(--ink);font:600 22px/1.2 "Bodoni Moda",Georgia,serif;margin-bottom:6px}
 .more{display:block;margin:24px auto 0;background:var(--panel);border:1.5px solid var(--line);border-radius:99px;min-height:46px;padding:0 24px;font-weight:700;cursor:pointer}
-footer{color:var(--soft);font-size:14px;text-align:center}
 .view{display:none}.view.on{display:block}
+footer{color:var(--soft);font-size:14px;text-align:center;padding-block:32px}
+/* modal e painel */
+.modal{position:fixed;inset:0;background:rgba(29,21,23,.55);display:none;place-items:center;padding:16px;z-index:30}
+.modal.on{display:grid}
+.sheet{background:var(--panel);border-radius:22px;padding:24px;width:min(460px,100%);display:grid;gap:12px;text-align:center}
+.code{font:800 28px/1 Figtree,sans-serif;letter-spacing:.08em;border:2px dashed var(--rose);border-radius:14px;padding:18px;overflow-wrap:anywhere;color:var(--rosed)}
+.btn{border:0;border-radius:12px;padding:0 16px;min-height:46px;font-weight:700;cursor:pointer;background:var(--blush);color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.main{background:var(--ink);color:var(--bg)}.btn.done{background:var(--wa)}
 .plist{display:grid;gap:14px;max-width:760px}
-.prow{background:var(--panel);border-radius:18px;padding:14px;display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;align-items:start}
-.prow img{width:92px;height:92px;object-fit:contain;background:#fff;border-radius:12px}
+.prow{background:var(--panel);border-radius:18px;padding:14px;display:grid;grid-template-columns:80px minmax(0,1fr);gap:14px;align-items:start}
+.prow>img,.prow>.mono{width:80px;height:80px;object-fit:contain;background:#fff;border-radius:12px}
 .prow .t{font-weight:700;line-height:1.3}
 .prow .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.btn{border:0;border-radius:12px;padding:0 14px;min-height:42px;font-weight:700;cursor:pointer;background:var(--blush);color:var(--ink);text-decoration:none;display:inline-flex;align-items:center}
-.btn.main{background:var(--ink);color:var(--bg)}
-.btn.done{background:var(--wa)}
 .new{color:var(--rosed);font-weight:800;font-size:13px}
 .bubble{background:var(--wa);border-radius:4px 16px 16px 16px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin-top:10px;display:none}
 .prow.open .bubble{display:block}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:700;display:none;z-index:20}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:700;display:none;z-index:40;max-width:92vw}
 .toast.on{display:block}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.body{padding:12px}.por{font-size:20px}.ph .off{top:auto;bottom:10px;right:10px}.store{font-size:12px}.prow{grid-template-columns:64px minmax(0,1fr)}.prow img{width:64px;height:64px}}
-@media(prefers-reduced-motion:reduce){.dot{animation:none}.card{transition:none}}
+.mlcode{background:var(--panel);border:2px solid var(--rose);border-radius:16px;padding:14px 16px;margin-top:16px}
+@media(max-width:1100px){header .wrap{grid-template-columns:minmax(0,1fr) auto}header nav.menu{order:3;grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}header .hsearch{order:2}}
+@media(max-width:980px){nav.menu{grid-column:1/-1;order:3}.hsearch .search{width:100%}.hsearch{grid-column:1/-1;order:4}
+  .hot{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.hero{grid-column:1/-1}}
+@media(max-width:600px){.hero{grid-template-columns:1fr}.hero .ph{min-height:0;aspect-ratio:1}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.body{padding:12px}.por{font-size:20px}
+  .ph .off{top:auto;bottom:10px;right:10px}.store{font-size:12px}.coupon{grid-template-columns:72px minmax(0,1fr)}.coupon::before,.coupon::after{left:60px}.cleft .mono{width:42px;height:42px}
+  .stores{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.storecard{padding:10px;gap:10px}.storecard .mono{width:36px;height:36px;font-size:15px}.storecard span{font-size:13px}.prow{grid-template-columns:60px minmax(0,1fr)}.prow>img,.prow>.mono{width:60px;height:60px}}
+@media(prefers-reduced-motion:reduce){.dot{animation:none}.card,.hero{transition:none}}
 </style>
 </head>
 <body>
-<header class="band"><div class="wrap">
-  <div><h1 class="logo">COOL GIRLS STUFF</h1><p class="tag">Achadinhos de beleza com desconto, garimpados o dia todo</p></div>
-  <div class="hright"><span class="live"><span class="dot"></span><span id="liveTxt">Carregando…</span></span><a class="join" id="join" href="#" target="_blank" rel="noopener" hidden>Entrar no grupo</a></div>
+<div class="groupbar" id="groupbar" hidden><div class="wrap pad">Os melhores achadinhos de beleza direto no seu WhatsApp <a id="joinTop" href="#" target="_blank" rel="noopener">Entrar no grupo</a></div></div>
+<header><div class="wrap pad">
+  <div><a class="logo" href="#inicio">COOL GIRLS STUFF</a><div class="live"><span class="dot"></span><span id="liveTxt">Carregando…</span></div></div>
+  <nav class="menu" aria-label="Menu">
+    <a href="#ofertas" data-v="ofertas">Ofertas do dia</a>
+    <a href="#cupons" data-v="cupons">Cupons</a>
+    <a href="#categorias" data-v="categorias">Categorias</a>
+  </nav>
+  <form class="hsearch" id="hsearch" role="search"><input class="search" id="hq" type="search" placeholder="Buscar promoções e cupons" aria-label="Buscar promoções e cupons"></form>
 </div></header>
+<div class="wrap pad" id="mlbox" hidden><div class="mlcode"><b>Código do Mercado Livre recebido.</b> Copie e cole no GitHub, em Actions › Conectar Mercado Livre › Run workflow. Ele vale só 10 minutos.<br><code id="mlcodeTxt" style="font-size:18px;font-weight:800;overflow-wrap:anywhere"></code></div></div>
 
-<div class="band" id="mlcode" hidden style="padding-bottom:0"><div class="code"><b>Código do Mercado Livre recebido.</b> Copie e cole no GitHub, em Actions › Conectar Mercado Livre › Run workflow. Ele vale só 10 minutos.<br><code id="mlcodeTxt"></code></div></div>
-<section id="vitrine" class="view">
-  <div class="bar"><div class="wrap">
+<main>
+<section id="inicio" class="view">
+  <div class="wrap pad sec"><div class="sechead"><h2>Filtrar por loja</h2></div><div class="stores" id="stores"></div></div>
+  <div class="wrap pad sec" style="padding-top:0"><div class="sechead"><h2>Ofertas mais quentes</h2><a class="seeall" href="#ofertas">Ver todas</a></div><div class="hot" id="hot"></div></div>
+  <div class="wrap pad sec" style="padding-top:0"><div class="sechead"><h2>Cupons das melhores lojas</h2><a class="seeall" href="#cupons">Ver todos</a></div><div class="coupons" id="homeCoupons"></div></div>
+  <div class="wrap pad sec" style="padding-top:0" id="kbox" hidden><div class="sechead"><h2>K-beauty favoritas</h2><a class="seeall" href="#ofertas" data-cat="K-beauty">Ver todas</a></div><div class="grid" id="kgrid"></div></div>
+  <div class="wrap pad sec" style="padding-top:0"><div class="sechead"><h2>Acabou de chegar</h2><a class="seeall" href="#ofertas">Ver todas</a></div><div class="grid" id="newgrid"></div></div>
+</section>
+
+<section id="ofertas" class="view">
+  <div class="bar"><div class="wrap pad">
     <div class="filters">
       <input id="q" class="search" type="search" placeholder="Buscar sérum, perfume, shampoo…" aria-label="Buscar ofertas">
-      <select id="fStore" aria-label="Loja"><option value="">Todas as lojas</option><option value="shopee">Shopee</option><option value="ml">Mercado Livre</option><option value="amz">Amazon</option></select>
+      <select id="fStore" aria-label="Loja"></select>
       <select id="fSort" aria-label="Ordenar"><option value="new">Mais recentes</option><option value="off">Maior desconto</option><option value="low">Menor preço</option></select>
     </div>
     <div class="chips" id="chips"></div>
   </div></div>
-  <div class="band"><div class="wrap">
-    <p class="count" id="count"></p>
-    <div class="grid" id="grid"></div>
-    <button class="more" id="more" hidden>Ver mais ofertas</button>
-  </div></div>
+  <div class="wrap pad sec"><p class="count" id="count"></p><div class="grid" id="grid"></div><button class="more" id="more" hidden>Ver mais ofertas</button></div>
 </section>
 
-<section id="painel" class="view"><div class="band"><div class="wrap">
-  <h2 style="font:600 30px/1.1 'Bodoni Moda',Georgia,serif;margin:0 0 6px">Painel de postagem</h2>
-  <p class="small" style="margin:0 0 18px">As ofertas mais novas primeiro. Toque em Copiar, cole no grupo e a oferta fica marcada como postada neste aparelho.</p>
-  <div class="filters" style="margin-bottom:16px"><select id="pShow" aria-label="Mostrar"><option value="todo">Ainda não postadas</option><option value="all">Todas</option></select></div>
+<section id="cupons" class="view"><div class="wrap pad sec">
+  <div class="sechead"><h2>Cupons</h2></div>
+  <div class="chips" id="cchips" style="margin-bottom:18px"></div>
+  <div class="coupons" id="allCoupons"></div>
+</div></section>
+
+<section id="categorias" class="view"><div class="wrap pad sec">
+  <div class="sechead"><h2>Categorias</h2></div><div class="cats" id="cats"></div>
+</div></section>
+
+<section id="painel" class="view"><div class="wrap pad sec">
+  <h2 style="margin-bottom:6px">Painel de postagem</h2>
+  <p class="small" style="margin:0 0 18px">Ofertas e cupons mais novos primeiro. Toque em Copiar, cole no grupo e fica marcado como postado neste aparelho.</p>
+  <div class="filters" style="margin-bottom:16px"><select id="pShow" aria-label="Mostrar"><option value="todo">Ainda não postados</option><option value="all">Todos</option></select></div>
   <div class="plist" id="plist"></div>
-</div></div></section>
+</div></section>
+</main>
 
-<footer class="band">Os links deste site são de afiliada: posso ganhar uma comissão quando você compra, sem custo extra pra você. Preços e estoque podem mudar a qualquer momento; confira na loja antes de finalizar.</footer>
+<footer class="wrap pad"><div class="social" id="social" style="justify-content:center;margin-bottom:14px"></div>Os links deste site são de afiliada: posso ganhar uma comissão quando você compra, sem custo extra pra você. Preços, cupons e estoque podem mudar a qualquer momento; confira na loja antes de finalizar.</footer>
+
+<div class="modal" id="cmodal" role="dialog" aria-modal="true" aria-labelledby="cmTitle"><div class="sheet">
+  <span class="cat" id="cmStore"></span><h2 id="cmTitle" style="font-size:24px"></h2><span class="small" id="cmRule"></span>
+  <div class="code" id="cmCode"></div><span class="small" id="cmHint"></span>
+  <a class="btn main" id="cmGo" href="#" target="_blank" rel="noopener sponsored">Ir para a loja</a>
+  <button class="btn" id="cmClose" type="button">Fechar</button>
+</div></div>
 <div class="toast" id="toast"></div>
-
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="bottle" viewBox="0 0 64 64"><rect x="24" y="4" width="16" height="12" rx="3" fill="#b5707c"/><rect x="27" y="16" width="10" height="6" fill="#99525f"/><rect x="14" y="22" width="36" height="38" rx="10" fill="#fffaf8" stroke="#b5707c" stroke-width="2.5"/><rect x="20" y="34" width="24" height="14" rx="3" fill="#ebcfc8"/></symbol>
 </defs></svg>
@@ -126,72 +212,130 @@ footer{color:var(--soft);font-size:14px;text-align:center}
 {
 const CATS=["K-beauty","Skincare","Maquiagem","Cabelo","Perfumes","Corpo e banho","Unhas","Kits e presentes","Achadinhos"];
 const LOJA={shopee:"Shopee",ml:"Mercado Livre",amz:"Amazon"};
+const TONES=["#ebcfc8","#e3d3e6","#d6e3d3","#efdcc3","#d9dcef","#f0d0d8","#dfd4c8"];
+const VIEWS=["inicio","ofertas","cupons","categorias","painel"];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const brl=n=>n==null?"":Number(n).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const safe=u=>/^https:\/\//i.test(u||"")?u:"#";
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const ago=t=>{if(!t)return"";const m=Math.floor((Date.now()/1000-t)/60);if(m<1)return"agora";if(m<60)return`há ${m} min`;const h=Math.floor(m/60);if(h<24)return`há ${h} h`;const d=Math.floor(h/24);return`há ${d} ${d>1?"dias":"dia"}`};
 const waHtml=t=>esc(t).replace(/\*([^*\n]+)\*/g,"<b>$1</b>").replace(/(^|\s)_([^_\n]+)_/g,"$1<i>$2</i>").replace(/~([^~\n]+)~/g,"<s>$1</s>");
-const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let data={ofertas:[]},cat="",shown=48,loaded=false,failed=false;
-let posted=new Set(store.get("cgs-postadas",[]));
+const mem={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const tone=n=>{let h=0;for(const c of norm(n))h=(h*31+c.charCodeAt(0))>>>0;return TONES[h%TONES.length]};
+const mono=n=>`<span class="mono" style="background:${tone(n)}" aria-hidden="true">${esc((n||"?").trim()[0].toUpperCase())}</span>`;
+const storeName=o=>LOJA[o.loja]||o.loja;
+let data={ofertas:[],cupons:[]},cat="",storeF="",cStore="",shown=48,loaded=false,failed=false;
+let posted=new Set(mem.get("cgs-postadas",[]));
 
-const pic=o=>/^https:\/\//.test(o.img||"")?`<img src="${esc(o.img)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.outerHTML='<svg aria-hidden=&quot;true&quot;><use href=&quot;#bottle&quot;/></svg>'">`:`<svg aria-hidden="true"><use href="#bottle"/></svg>`;
-
-function route(){const v=location.hash==="#painel"?"painel":"vitrine";$("#vitrine").classList.toggle("on",v==="vitrine");$("#painel").classList.toggle("on",v==="painel");render()}
+/* ---------- navegação ---------- */
+function route(){let v=location.hash.slice(1);if(!VIEWS.includes(v))v="inicio";
+  VIEWS.forEach(x=>$("#"+x).classList.toggle("on",x===v));
+  document.querySelectorAll("nav.menu a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.v===v));
+  render();scrollTo({top:0})}
 addEventListener("hashchange",route);
+function go(view){if(location.hash==="#"+view)route();else location.hash=view}
 
-$("#chips").innerHTML=["",...CATS].map(c=>`<button class="chip${c===""?" on":""}${c==="K-beauty"?" k":""}" data-c="${esc(c)}">${c||"Todas"}</button>`).join("");
-$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;cat=b.dataset.c;shown=48;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));render()};
-["#q","#fStore","#fSort"].forEach(s=>$(s).addEventListener("input",()=>{shown=48;render()}));
-$("#more").onclick=()=>{shown+=48;render()};
-$("#pShow").oninput=render;
-
-function filtered(){const q=$("#q").value.trim().toLowerCase(),st=$("#fStore").value,so=$("#fSort").value;
-  let l=data.ofertas.filter(o=>(!cat||(cat==="K-beauty"?o.fav:o.cat===cat))&&(!st||o.loja===st)&&(!q||(o.titulo||"").toLowerCase().includes(q)));
-  if(so==="off")l=[...l].sort((a,b)=>b.off-a.off);else if(so==="low")l=[...l].sort((a,b)=>a.por-b.por);return l}
-
-function card(o){const old=Date.now()/1000-(o.desde||0)>86400;
-  const flag=o.baixou?"Baixou o preço":o.fav?"K-beauty":old?"Confira o preço":"";
-  return`<a class="card" href="${esc(safe(o.link))}" target="_blank" rel="noopener sponsored"><div class="ph">${pic(o)}<span class="pill store">${LOJA[o.loja]||""}</span>${o.off?`<span class="pill off">-${o.off}%</span>`:""}${flag?`<span class="pill flag">${flag}</span>`:""}</div>
+/* ---------- peças ---------- */
+const pic=o=>/^https:\/\//.test(o.img||"")?`<img src="${esc(o.img)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.outerHTML='<svg aria-hidden=&quot;true&quot;><use href=&quot;#bottle&quot;/></svg>'">`:`<svg aria-hidden="true"><use href="#bottle"/></svg>`;
+function flagOf(o){if(o.baixou)return"Baixou o preço";if(o.fav)return"K-beauty";if(Date.now()/1000-(o.desde||0)>86400)return"Confira o preço";return""}
+function card(o,hero){const f=flagOf(o);const ph=`<div class="ph${/^https:/.test(o.img||"")?"":" noimg"}">${pic(o)}<span class="pill store">${esc(storeName(o))}</span>${o.off?`<span class="pill off">-${o.off}%</span>`:""}${f?`<span class="pill flag">${f}</span>`:""}</div>`;
+  return`<a class="${hero?"hero":"card"}" href="${esc(safe(o.link))}" target="_blank" rel="noopener sponsored">${ph}
   <div class="body"><span class="cat">${esc(o.cat)} · ${ago(o.desde)}</span><span class="title">${esc(o.titulo)}</span>
   ${o.de?`<span class="de">${brl(o.de)}</span>`:""}<span class="por">${brl(o.por)}</span>${o.parc?`<span class="small">${esc(o.parc)}</span>`:""}
-  <span class="buy">Quero</span></div></a>`}
+  <span class="buy">${hero?"Quero esse":"Quero"}</span></div></a>`}
+function coupon(c){const tail=c.codigo?c.codigo.slice(-3):"";const val=c.validade?c.validade.split("-").reverse().slice(0,2).join("/"):"";
+  return`<article class="coupon"><div class="cleft">${mono(c.loja)}<span>${esc(c.loja)}</span></div>
+  <div class="cbody"><span class="ct">${esc(c.titulo)}</span>${c.regra?`<span class="cmeta">${esc(c.regra)}</span>`:""}${val?`<span class="cmeta">Válido até ${val}</span>`:""}
+  <button class="cbtn${c.codigo?"":" nocode"}" data-cp="${esc(c.id)}" type="button"><span class="lbl">${c.codigo?"Pegar cupom":"Resgatar cupom"}</span>${c.codigo?`<span class="peek" aria-hidden="true">…${esc(tail)}</span>`:""}</button></div></article>`}
+const empty=(t,s)=>`<div class="empty"><b>${t}</b>${s}</div>`;
 
-function render(){
-  const g=$("#grid");
-  if(!loaded){g.innerHTML=`<div class="empty"><b>Carregando as ofertas…</b></div>`;return}
-  if(failed&&!data.ofertas.length){g.innerHTML=`<div class="empty"><b>Não consegui carregar as ofertas</b>Confira sua internet e atualize a página.</div>`;$("#plist").innerHTML="";return}
-  const l=filtered();
-  $("#count").textContent=l.length?`${l.length} ${l.length>1?"ofertas":"oferta"}`:"";
-  g.innerHTML=l.length?l.slice(0,shown).map(card).join(""):`<div class="empty"><b>${data.ofertas.length?"Nada com esses filtros":"O robô está garimpando"}</b>${data.ofertas.length?"Tente outra categoria ou limpe a busca.":"As primeiras ofertas aparecem aqui em instantes."}</div>`;
-  $("#more").hidden=l.length<=shown;
-  renderPainel()}
+/* ---------- filtros ---------- */
+function stores(){const m=new Map();
+  for(const o of data.ofertas){const n=storeName(o);const e=m.get(n)||{n,key:o.loja,of:0,cp:0};e.of++;m.set(n,e)}
+  for(const c of data.cupons){const k=Object.keys(LOJA).find(k=>norm(LOJA[k])===norm(c.loja));const n=k?LOJA[k]:c.loja;const e=m.get(n)||{n,key:k||"",of:0,cp:0};e.cp++;m.set(n,e)}
+  return[...m.values()].sort((a,b)=>(b.of+b.cp)-(a.of+a.cp))}
+function filtered(){const q=norm($("#q").value.trim()),so=$("#fSort").value;
+  let l=data.ofertas.filter(o=>(!cat||(cat==="K-beauty"?o.fav:o.cat===cat))&&(!storeF||o.loja===storeF)&&(!q||norm(o.titulo).includes(q)));
+  if(so==="off")l=[...l].sort((a,b)=>b.off-a.off);else if(so==="low")l=[...l].sort((a,b)=>a.por-b.por);return l}
+function setCat(c){cat=c;shown=48;document.querySelectorAll("#chips .chip").forEach(x=>x.classList.toggle("on",x.dataset.c===c))}
 
-function renderPainel(){if(location.hash!=="#painel")return;
-  const all=$("#pShow").value==="all";const l=[...data.ofertas].sort((a,b)=>b.desde-a.desde).filter(o=>all||!posted.has(o.id+":"+o.por));
-  $("#plist").innerHTML=l.length?l.slice(0,80).map(o=>{const done=posted.has(o.id+":"+o.por);
-    return`<div class="prow" data-id="${esc(o.id)}">${/^https:\/\//.test(o.img||"")?`<img src="${esc(o.img)}" alt="" loading="lazy">`:`<div class="ph noimg" style="width:inherit;border-radius:12px"><svg aria-hidden="true"><use href="#bottle"/></svg></div>`}
-    <div><span class="new">${LOJA[o.loja]} · ${ago(o.desde)}${o.baixou?" · baixou o preço":""}</span><div class="t">${esc(o.titulo)}</div><div class="small">${o.de?`<s>${brl(o.de)}</s> `:""}<b>${brl(o.por)}</b>${o.off?` · ${o.off}% OFF`:""}</div>
-    <div class="acts"><button class="btn ${done?"done":"main"}" data-a="copy">${done?"Copiada ✓":"Copiar mensagem"}</button><button class="btn" data-a="see">Ver texto</button><a class="btn" href="${esc(safe(o.link))}" target="_blank" rel="noopener">Abrir</a></div>
-    <div class="bubble">${waHtml(o.msg||"")}</div></div></div>`}).join(""):`<div class="empty"><b>Tudo postado</b>Quando o robô achar ofertas novas, elas aparecem aqui.</div>`}
+$("#chips").innerHTML=["",...CATS].map(c=>`<button class="chip${c===""?" on":""}${c==="K-beauty"?" k":""}" data-c="${esc(c)}" type="button">${c||"Todas"}</button>`).join("");
+$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(b){setCat(b.dataset.c);render()}};
+$("#fStore").innerHTML=`<option value="">Todas as lojas</option>`+Object.entries(LOJA).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+$("#fStore").oninput=()=>{storeF=$("#fStore").value;shown=48;render()};
+["#q","#fSort"].forEach(s=>$(s).addEventListener("input",()=>{shown=48;render()}));
+$("#more").onclick=()=>{shown+=48;render()};
+$("#pShow").oninput=render;
+$("#hsearch").onsubmit=e=>{e.preventDefault();$("#q").value=$("#hq").value;setCat("");storeF="";$("#fStore").value="";go("ofertas")};
+$("#stores").onclick=e=>{const b=e.target.closest(".storecard");if(!b)return;
+  if(b.dataset.key&&Number(b.dataset.of)>0){storeF=b.dataset.key;$("#fStore").value=storeF;setCat("");go("ofertas")}else{cStore=b.dataset.n;go("cupons")}};
+$("#cats").onclick=e=>{const b=e.target.closest(".cattile");if(b){setCat(b.dataset.c);storeF="";$("#fStore").value="";go("ofertas")}};
+document.addEventListener("click",e=>{const a=e.target.closest(".seeall");if(a&&a.getAttribute("href")==="#ofertas"){setCat(a.dataset.cat||"");storeF="";$("#fStore").value="";$("#q").value=""}});
+$("#cchips").onclick=e=>{const b=e.target.closest(".chip");if(b){cStore=b.dataset.s;render()}};
 
-$("#plist").onclick=async e=>{const b=e.target.closest("[data-a]");if(!b)return;const row=b.closest(".prow");const o=data.ofertas.find(x=>x.id===row.dataset.id);if(!o)return;
+/* ---------- cupom: revelar código ---------- */
+let lastCp=null;
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-cp]");if(!b)return;const c=data.cupons.find(x=>x.id===b.dataset.cp);if(!c)return;
+  lastCp=c;$("#cmStore").textContent=c.loja;$("#cmTitle").textContent=c.titulo;$("#cmRule").textContent=c.regra||"";
+  $("#cmGo").href=safe(c.link);$("#cmGo").textContent=c.codigo?"Ir para a loja":"Resgatar na loja";
+  $("#cmCode").hidden=!c.codigo;$("#cmCode").textContent=c.codigo;
+  let ok=false;if(c.codigo){try{await navigator.clipboard.writeText(c.codigo);ok=true}catch(err){}}
+  $("#cmHint").textContent=c.codigo?(ok?"Código copiado! Cole no carrinho antes de pagar.":"Toque e segure o código para copiar."):"É só clicar e o cupom fica salvo na sua conta da loja.";
+  $("#cmodal").classList.add("on");$("#cmGo").focus()});
+$("#cmClose").onclick=()=>$("#cmodal").classList.remove("on");
+$("#cmodal").onclick=e=>{if(e.target.id==="cmodal")$("#cmodal").classList.remove("on")};
+addEventListener("keydown",e=>{if(e.key==="Escape")$("#cmodal").classList.remove("on")});
+
+/* ---------- desenhar ---------- */
+function render(){const v=location.hash.slice(1)||"inicio";
+  if(!loaded){$("#hot").innerHTML=empty("Carregando as ofertas…","");return}
+  if(failed&&!data.ofertas.length&&!data.cupons.length){["#hot","#grid","#allCoupons"].forEach(s=>$(s).innerHTML=empty("Não consegui carregar","Confira sua internet e atualize a página."));return}
+  if(v==="inicio"){
+    const st=stores();$("#stores").innerHTML=st.length?st.map(s=>`<button class="storecard" type="button" data-key="${esc(s.key)}" data-of="${s.of}" data-n="${esc(s.n)}">${mono(s.n)}<div><b>${esc(s.n)}</b><span>${[s.of?`${s.of} ${s.of>1?"ofertas":"oferta"}`:"",s.cp?`${s.cp} ${s.cp>1?"cupons":"cupom"}`:""].filter(Boolean).join(" · ")}</span></div></button>`).join(""):empty("Lojas chegando","O robô está garimpando.");
+    const day=data.ofertas.filter(o=>Date.now()/1000-(o.desde||0)<86400);const pool=(day.length>=3?day:data.ofertas);
+    const hot=[...pool].sort((a,b)=>b.off-a.off).slice(0,3);
+    $("#hot").innerHTML=hot.length?hot.map((o,i)=>card(o,i===0)).join(""):empty("O robô está garimpando","As primeiras ofertas aparecem aqui em instantes.");
+    $("#homeCoupons").innerHTML=data.cupons.length?data.cupons.slice(0,4).map(coupon).join(""):empty("Cupons chegando","Fica de olho que logo tem cupom novo por aqui.");
+    const k=data.ofertas.filter(o=>o.fav).slice(0,8);$("#kbox").hidden=!k.length;$("#kgrid").innerHTML=k.map(o=>card(o)).join("");
+    const hotIds=new Set(hot.map(o=>o.id));$("#newgrid").innerHTML=data.ofertas.filter(o=>!hotIds.has(o.id)).slice(0,8).map(o=>card(o)).join("")||empty("Nada novo ainda","Volte daqui a pouco.");
+  }
+  if(v==="ofertas"){const l=filtered();$("#count").textContent=l.length?`${l.length} ${l.length>1?"ofertas":"oferta"}`:"";
+    $("#grid").innerHTML=l.length?l.slice(0,shown).map(o=>card(o)).join(""):empty(data.ofertas.length?"Nada com esses filtros":"O robô está garimpando",data.ofertas.length?"Tente outra categoria ou limpe a busca.":"As primeiras ofertas aparecem aqui em instantes.");
+    $("#more").hidden=l.length<=shown}
+  if(v==="cupons"){const ls=[...new Set(data.cupons.map(c=>c.loja))];if(cStore&&!ls.includes(cStore))cStore="";
+    $("#cchips").innerHTML=ls.length>1?["",...ls].map(s=>`<button class="chip${s===cStore?" on":""}" data-s="${esc(s)}" type="button">${s||"Todas"}</button>`).join(""):"";
+    const l=data.cupons.filter(c=>!cStore||c.loja===cStore);
+    $("#allCoupons").innerHTML=l.length?l.map(coupon).join(""):empty("Cupons chegando","Fica de olho que logo tem cupom novo por aqui.")}
+  if(v==="categorias"){$("#cats").innerHTML=CATS.map(c=>{const n=data.ofertas.filter(o=>c==="K-beauty"?o.fav:o.cat===c).length;return n?`<button class="cattile" type="button" data-c="${esc(c)}"><b>${c}</b><span>${n} ${n>1?"ofertas":"oferta"}</span></button>`:""}).join("")||empty("Categorias chegando","Assim que o robô achar ofertas, elas aparecem aqui.")}
+  if(v==="painel")renderPainel()}
+
+function renderPainel(){const all=$("#pShow").value==="all";
+  const items=[...data.cupons.map(c=>({...c,tipo:"cupom",key:c.id})),...data.ofertas.map(o=>({...o,tipo:"oferta",key:o.id+":"+o.por}))]
+    .sort((a,b)=>(b.desde||data.atualizado_em||0)-(a.desde||data.atualizado_em||0)).filter(x=>all||!posted.has(x.key));
+  $("#plist").innerHTML=items.length?items.slice(0,100).map(x=>{const done=posted.has(x.key);
+    const left=x.tipo==="cupom"?mono(x.loja):/^https:\/\//.test(x.img||"")?`<img src="${esc(x.img)}" alt="" loading="lazy">`:mono(storeName(x));
+    const info=x.tipo==="cupom"?`<span class="new">Cupom · ${esc(x.loja)}</span><div class="t">${esc(x.titulo)}</div><div class="small">${x.codigo?`Código ${esc(x.codigo)}`:"Cupom de resgate"}</div>`
+      :`<span class="new">${esc(storeName(x))} · ${ago(x.desde)}${x.baixou?" · baixou o preço":""}</span><div class="t">${esc(x.titulo)}</div><div class="small">${x.de?`<s>${brl(x.de)}</s> `:""}<b>${brl(x.por)}</b>${x.off?` · ${x.off}% OFF`:""}</div>`;
+    return`<div class="prow" data-k="${esc(x.key)}">${left}<div>${info}<div class="acts"><button class="btn ${done?"done":"main"}" data-a="copy" type="button">${done?"Copiada ✓":"Copiar mensagem"}</button><button class="btn" data-a="see" type="button">Ver texto</button><a class="btn" href="${esc(safe(x.link))}" target="_blank" rel="noopener">Abrir</a></div><div class="bubble">${waHtml(x.msg||"")}</div></div></div>`}).join("")
+    :empty("Tudo postado","Quando o robô achar novidades, elas aparecem aqui.")}
+$("#plist").onclick=async e=>{const b=e.target.closest("[data-a]");if(!b)return;const row=b.closest(".prow");const k=row.dataset.k;
+  const x=data.cupons.find(c=>c.id===k)||data.ofertas.find(o=>o.id+":"+o.por===k);if(!x)return;
   if(b.dataset.a==="see"){row.classList.toggle("open");return}
-  let ok=false;try{await navigator.clipboard.writeText(o.msg);ok=true}catch(err){}
-  if(ok){posted.add(o.id+":"+o.por);store.set("cgs-postadas",[...posted].slice(-1500));b.textContent="Copiada ✓";b.className="btn done";toast("Mensagem copiada. Agora é só colar no grupo.")}
+  let ok=false;try{await navigator.clipboard.writeText(x.msg);ok=true}catch(err){}
+  if(ok){posted.add(k);mem.set("cgs-postadas",[...posted].slice(-2000));b.textContent="Copiada ✓";b.className="btn done";toast("Mensagem copiada. Agora é só colar no grupo.")}
   else{row.classList.add("open");toast("Não deu pra copiar sozinho: selecione o texto abaixo.")}};
-
 let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),3000)}
 
+/* ---------- dados ---------- */
 async function load(){
-  try{const r=await fetch("ofertas.json?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;data=await r.json();data.ofertas=data.ofertas||[];failed=false}
-  catch(e){failed=true}
+  try{const r=await fetch("ofertas.json?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;data=await r.json();data.ofertas=data.ofertas||[];data.cupons=data.cupons||[];failed=false}catch(e){failed=true}
   loaded=true;
-  if(data.link_do_grupo&&/^https:\/\//.test(data.link_do_grupo)){$("#join").href=data.link_do_grupo;$("#join").hidden=false}
+  if(/^https:\/\//.test(data.link_do_grupo||"")){$("#joinTop").href=data.link_do_grupo;$("#groupbar").hidden=false}
+  $("#social").innerHTML=[["Instagram",data.instagram],["TikTok",data.tiktok]].filter(([,u])=>/^https:\/\//.test(u||"")).map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join("");
   $("#liveTxt").textContent=data.atualizado_em?`Atualizado ${ago(data.atualizado_em)}`:(failed?"Sem conexão":"Ligando o robô");
   render()}
-{const c=new URLSearchParams(location.search).get("code");if(c&&/^TG-[\w-]+$/.test(c)){$("#mlcodeTxt").textContent=c;$("#mlcode").hidden=false}}
+{const c=new URLSearchParams(location.search).get("code");if(c&&/^TG-[\w-]+$/.test(c)){$("#mlcodeTxt").textContent=c;$("#mlbox").hidden=false}}
 route();load();setInterval(load,120000);setInterval(()=>{if(data.atualizado_em)$("#liveTxt").textContent=`Atualizado ${ago(data.atualizado_em)}`},30000);
 }
 </script>

@@ -7,6 +7,8 @@
 [geral]
 nome_do_grupo = "COOL GIRLS STUFF"
 link_do_grupo = ""                 # ex: "https://chat.whatsapp.com/xxxx" (vai no fim das mensagens)
+instagram = ""                     # ex: "https://instagram.com/coolgirlsstuff" (ícone no topo do site)
+tiktok = ""                        # ex: "https://tiktok.com/@coolgirlsstuff"
 desconto_minimo = 20               # só entra oferta com pelo menos X% de desconto
 desconto_minimo_favoritas = 10     # para as suas lojas favoritas o corte é mais baixo
 preco_minimo = 15                  # em reais

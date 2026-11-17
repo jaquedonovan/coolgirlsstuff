@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+#  COOL GIRLS STUFF · cupons
+#  Para adicionar um cupom: copie um bloco [[cupom]], cole embaixo e troque os dados.
+#  Edite aqui mesmo no GitHub (ícone de lápis) e clique em "Commit changes".
+#  Cupom vencido some do site sozinho no dia seguinte à validade.
+#
+#  loja      → nome da loja como aparece no site (ex: "Shopee", "Mercado Livre", "Amazon", "Sephora")
+#  codigo    → o código que a pessoa digita no carrinho. Deixe "" se for cupom de resgate (só clicar no link)
+#  titulo    → frase curta, ex: "15% OFF em skincare"
+#  regra     → detalhe opcional, ex: "Compras acima de R$ 99"
+#  link      → SEU link de afiliada para a página do cupom ou da loja
+#  validade  → "AAAA-MM-DD" (último dia que vale). Deixe "" se não tiver data
+#  destaque  → true para aparecer primeiro
+# ─────────────────────────────────────────────────────────────
+
+[[cupom]]
+loja = "Shopee"
+codigo = ""
+titulo = "Cupom de exemplo: apague este bloco"
+regra = "Troque pelos seus cupons reais"
+link = "https://shopee.com.br"
+validade = "2026-11-30"
+destaque = false
+exemplo = true

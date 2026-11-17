@@ -15,6 +15,35 @@ os.environ.update(SHOPEE_APP_ID="123", SHOPEE_SECRET="abc", ML_CLIENT_ID="1", ML
 cfg_txt = robo.CONFIG.read_text(encoding="utf-8").replace("shop_id = 0", "shop_id = 777", 1)
 robo.CONFIG = tmp / "config.toml"
 robo.CONFIG.write_text(cfg_txt, encoding="utf-8")
+robo.CUPONS = tmp / "cupons.toml"
+robo.CUPONS.write_text("""
+[[cupom]]
+loja = "Shopee"
+codigo = "glow15"
+titulo = "15% OFF em skincare"
+regra = "Acima de R$ 79"
+link = "https://s.shopee.com.br/cupom"
+validade = "2099-12-31"
+
+[[cupom]]
+loja = "Sephora"
+codigo = "VELHO"
+titulo = "Cupom vencido"
+link = "https://sephora.com.br"
+validade = "2020-01-01"
+
+[[cupom]]
+loja = "Mercado Livre"
+titulo = "Frete grátis em beleza"
+link = "https://meli.la/abc"
+destaque = true
+
+[[cupom]]
+loja = "Shopee"
+titulo = "Exemplo"
+link = "https://shopee.com.br"
+exemplo = true
+""", encoding="utf-8")
 
 chamadas = []
 PRECO = {"x": 59.9}
@@ -58,6 +87,10 @@ robo.time.sleep = lambda s: None
 robo.main()
 d = json.loads(robo.SAIDA.read_text())
 ids = [o["id"] for o in d["ofertas"]]
+cps = d["cupons"]
+assert [c["loja"] for c in cps] == ["Mercado Livre", "Shopee"], cps   # destaque primeiro; vencido e exemplo fora
+assert cps[1]["codigo"] == "GLOW15" and "Código: *GLOW15*" in cps[1]["msg"] and "Válido até 31/12" in cps[1]["msg"]
+assert "Resgate aqui" in cps[0]["msg"]
 print("ofertas:", ids)
 assert set(ids) == {"shp-2", "shp-1", "ml-MLB1"}, ids          # batom barato, contratipo e sem desconto ficam fora
 ml = next(o for o in d["ofertas"] if o["id"] == "ml-MLB1")
