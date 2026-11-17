@@ -1,0 +1,68 @@
+name: Robô de ofertas
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"      # a cada 20 minutos (o GitHub às vezes atrasa alguns minutos)
+  workflow_dispatch:             # botão "Run workflow" pra rodar na hora
+  push:
+    branches: [main]
+    paths: ["config.toml", "docs/index.html", "robo/**"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: robo
+  cancel-in-progress: false
+
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Buscar ofertas
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_SECRET: ${{ secrets.SHOPEE_SECRET }}
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
+          ML_MATT_WORD: ${{ secrets.ML_MATT_WORD }}
+          ML_MATT_TOOL: ${{ secrets.ML_MATT_TOOL }}
+        run: python robo/robo.py
+
+      - name: Guardar o novo token do Mercado Livre
+        if: hashFiles('.ml_refresh_token_novo') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -n "$GH_TOKEN" ]; then gh secret set ML_REFRESH_TOKEN < .ml_refresh_token_novo; else echo "Falta o Secret GH_PAT (veja o LEIAME)."; fi
+          rm -f .ml_refresh_token_novo
+
+      - name: Salvar ofertas
+        run: |
+          git config user.name "robo-coolgirls"
+          git config user.email "robo-coolgirls@users.noreply.github.com"
+          git add docs/ofertas.json
+          if ! git diff --cached --quiet; then
+            git commit -m "ofertas atualizadas" -q
+            git pull --rebase -q && git push -q
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────────────
+#  COOL GIRLS STUFF · configurações do robô
+#  Pode editar este arquivo direto no GitHub (ícone de lápis).
+#  Senhas e chaves NÃO ficam aqui: elas vão em Settings > Secrets.
+# ─────────────────────────────────────────────────────────────
+
+[geral]
+nome_do_grupo = "COOL GIRLS STUFF"
+link_do_grupo = ""                 # ex: "https://chat.whatsapp.com/xxxx" (vai no fim das mensagens)
+desconto_minimo = 20               # só entra oferta com pelo menos X% de desconto
+desconto_minimo_favoritas = 10     # para as suas lojas favoritas o corte é mais baixo
+preco_minimo = 15                  # em reais
+preco_maximo = 800
+nota_minima = 4.5                  # avaliação mínima do produto (quando a loja informa)
+horas_ate_sair = 24                # oferta que o robô não encontrar mais por X horas sai do catálogo
+maximo_de_ofertas = 300
+aviso_afiliada = "#publi"
+frase_urgencia = "Essa promoção pode acabar a qualquer momento!"
+
+# Palavras que o robô usa pra procurar. Pode tirar e colocar à vontade.
+buscas = [
+  "sérum facial", "protetor solar facial", "skincare coreano", "hidratante facial",
+  "perfume feminino", "body splash", "máscara de cílios", "base maquiagem",
+  "batom", "paleta de sombras", "shampoo", "máscara capilar", "óleo capilar",
+  "creme corporal", "esmalte", "kit presente beleza",
+]
+
+# Produtos com estas palavras no nome nunca entram.
+palavras_proibidas = ["réplica", "replica", "inspirado", "contratipo", "usado", "amostra grátis"]
+
+# ─────────────────────────────────────────────
+[shopee]
+ligado = true
+so_lojas_oficiais = true           # true = só Shopee Mall / lojas oficiais (exceto as favoritas, que sempre entram)
+
+# Suas lojas favoritas: o robô olha TODAS as ofertas delas, mesmo sem palavra-chave,
+# e elas ganham um destaque "K-beauty" no catálogo.
+# shop_id é o número da loja (eu te ajudo a achar a partir do link).
+[[shopee.lojas_favoritas]]
+nome = "Loja coreana 1"
+shop_id = 0
+
+[[shopee.lojas_favoritas]]
+nome = "Loja coreana 2"
+shop_id = 0
+
+# ─────────────────────────────────────────────
+[mercado_livre]
+ligado = true
+categoria = "MLB1246"              # Beleza e Cuidado Pessoal
+so_lojas_oficiais = false
+so_full = false                    # true = só produtos com entrega Full
+
+# ─────────────────────────────────────────────
+[amazon]
+ligado = false                     # liga quando você tiver 10 vendas em 30 dias (exigência da Amazon)
+tag = ""                           # seu ID de associada, ex: "coolgirls-20"
