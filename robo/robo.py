@@ -340,7 +340,7 @@ def amazon_buscar(cfg):
     if not ac.get("ligado"):
         return None
     cid, sec = os.getenv("AMAZON_CREDENTIAL_ID"), os.getenv("AMAZON_CREDENTIAL_SECRET")
-    versao = (os.getenv("AMAZON_VERSION") or "3.1").strip()
+    versao = (os.getenv("AMAZON_VERSION") or "3.1").strip().lstrip("vV").strip()
     tag = (os.getenv("AMAZON_TAG") or ac.get("tag") or "").strip()
     if not cid or not sec:
         log("Amazon: sem AMAZON_CREDENTIAL_ID / AMAZON_CREDENTIAL_SECRET, pulando.")
