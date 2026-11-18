@@ -120,3 +120,30 @@ robo.main()
 d3 = {o["id"] for o in json.loads(robo.SAIDA.read_text())["ofertas"]}
 assert d3 == {"shp-1", "shp-2"}, d3
 print("\nTODOS OS TESTES PASSARAM ✓")
+
+# ───── Amazon (Creators API) com respostas falsas ─────
+os.environ.update(AMAZON_CREDENTIAL_ID="cid", AMAZON_CREDENTIAL_SECRET="sec", AMAZON_VERSION="3.1", AMAZON_TAG="coolgirls-20")
+pedidos = []
+def amz_falso(method, url, *, headers=None, data=None, **k):
+    if url == "https://api.amazon.com/auth/o2/token":
+        corpo = json.loads(data)
+        assert corpo["scope"] == "creatorsapi::default" and corpo["client_id"] == "cid"
+        return {"access_token": "AMZTOKEN"}
+    assert url == robo.AMZ_API and headers["x-marketplace"] == "www.amazon.com.br" and headers["Authorization"] == "Bearer AMZTOKEN"
+    corpo = json.loads(data); pedidos.append(corpo)
+    if "minSavingPercent" in corpo and len(pedidos) == 1:
+        raise RuntimeError("HTTP 400 em searchItems: filtro desconhecido")
+    return {"searchResult": {"items": [{
+        "asin": "B0TESTE", "detailPageURL": "https://www.amazon.com.br/dp/B0TESTE?tag=outra-20&linkCode=ogi",
+        "itemInfo": {"title": {"displayValue": "Sérum Facial Niacinamida 30ml"}},
+        "images": {"primary": {"large": {"url": "https://m.media-amazon.com/images/I/x.jpg"}}},
+        "offersV2": {"listings": [{"price": {"money": {"amount": 59.9}, "savings": {"percentage": 40},
+                                             "savingBasis": {"money": {"amount": 99.9}}}}]}}]}}
+robo.http = amz_falso
+cfg = robo.tomllib.loads(robo.CONFIG.read_text(encoding="utf-8"))
+cfg["amazon"]["ligado"] = True
+res = robo.amazon_buscar(cfg)
+assert res and res[0]["id"] == "amz-B0TESTE" and res[0]["off"] == 40 and res[0]["de"] == 99.9
+assert "tag=coolgirls-20" in res[0]["link"] and "outra-20" not in res[0]["link"], res[0]["link"]
+assert "minSavingPercent" not in pedidos[-1]   # caiu pro modo sem filtro depois do 400
+print("AMAZON OK ✓")

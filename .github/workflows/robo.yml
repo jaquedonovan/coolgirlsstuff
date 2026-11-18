@@ -40,6 +40,9 @@ jobs:
           ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
           ML_MATT_WORD: ${{ secrets.ML_MATT_WORD }}
           ML_MATT_TOOL: ${{ secrets.ML_MATT_TOOL }}
+          AMAZON_CREDENTIAL_ID: ${{ secrets.AMAZON_CREDENTIAL_ID }}
+          AMAZON_CREDENTIAL_SECRET: ${{ secrets.AMAZON_CREDENTIAL_SECRET }}
+          AMAZON_VERSION: ${{ secrets.AMAZON_VERSION }}
         run: python robo/robo.py
 
       - name: Guardar o novo token do Mercado Livre

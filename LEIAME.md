@@ -94,8 +94,19 @@ Abra o `config.toml` aqui no GitHub (ícone de lápis), mude e clique em **Commi
 ## Se algo der errado
 **Actions** › clique na última execução › **Buscar ofertas**. O robô escreve em português o que conseguiu e o que faltou.
 
-## Amazon
-A Amazon só libera a API (Creators API) com 10 vendas qualificadas nos últimos 30 dias. Quando chegar lá, gere as credenciais no Associates Central e me chame pra ligar essa parte.
+## Amazon (Creators API)
+1. No **Associates Central** (associados.amazon.com.br), vá em **Ferramentas › Creators API**.
+2. Crie um aplicativo e clique em **Adicionar nova credencial**.
+3. Copie na hora o **Credential ID**, o **Credential Secret** (ele só aparece uma vez) e a **Versão**.
+4. Crie os Secrets:
+
+| Nome | O que colar |
+|---|---|
+| `AMAZON_CREDENTIAL_ID` | Credential ID |
+| `AMAZON_CREDENTIAL_SECRET` | Credential Secret |
+| `AMAZON_VERSION` | a versão que aparece na credencial (ex.: `3.1`) |
+
+5. No `config.toml`, em `[amazon]`, coloque a sua tag de associada em `tag` (ex.: `"coolgirls-20"`).
 
 ## Para testar no computador (opcional)
 ```

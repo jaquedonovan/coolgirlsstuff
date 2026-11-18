@@ -59,5 +59,6 @@ so_full = false                    # true = só produtos com entrega Full
 
 # ─────────────────────────────────────────────
 [amazon]
-ligado = false                     # liga quando você tiver 10 vendas em 30 dias (exigência da Amazon)
-tag = ""                           # seu ID de associada, ex: "coolgirls-20"
+ligado = true
+tag = ""                           # seu ID de associada (termina em -20), ex: "coolgirls-20"
+indice = ""                        # opcional: categoria da Amazon pra buscar (vazio = todas)

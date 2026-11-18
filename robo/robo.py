@@ -290,15 +290,118 @@ def ml_buscar(cfg):
     return out
 
 
-# ───────────────────────── AMAZON ─────────────────────────
+# ───────────────────────── AMAZON (Creators API) ─────────────────────────
+AMZ_API = "https://creatorsapi.amazon/catalog/v1/searchItems"
+AMZ_MARKET = "www.amazon.com.br"
+AMZ_TOKEN = {  # endpoint de login por "versão" da credencial
+    "3.1": "https://api.amazon.com/auth/o2/token",
+    "3.2": "https://api.amazon.co.uk/auth/o2/token",
+    "3.3": "https://api.amazon.co.jp/auth/o2/token",
+    "2.1": "https://creatorsapi.auth.us-east-1.amazoncognito.com/oauth2/token",
+    "2.2": "https://creatorsapi.auth.eu-south-2.amazoncognito.com/oauth2/token",
+    "2.3": "https://creatorsapi.auth.us-west-2.amazoncognito.com/oauth2/token",
+}
+AMZ_RECURSOS = ["itemInfo.title", "images.primary.large", "offersV2.listings.price", "offersV2.listings.merchantInfo"]
+
+
+def amazon_token(cid, sec, versao):
+    url = AMZ_TOKEN.get(versao)
+    if not url:
+        raise RuntimeError(f"versão de credencial desconhecida: {versao}")
+    if versao.startswith("3."):
+        corpo = json.dumps({"grant_type": "client_credentials", "client_id": cid,
+                            "client_secret": sec, "scope": "creatorsapi::default"})
+        r = http("POST", url, headers={"Content-Type": "application/json"}, data=corpo, tentativas=2)
+    else:
+        corpo = urllib.parse.urlencode({"grant_type": "client_credentials", "client_id": cid,
+                                        "client_secret": sec, "scope": "creatorsapi/default"})
+        r = http("POST", url, headers={"Content-Type": "application/x-www-form-urlencoded"}, data=corpo, tentativas=2)
+    return r["access_token"]
+
+
+def _pega(d, *caminho):
+    for c in caminho:
+        if isinstance(d, list):
+            d = d[0] if d else None
+        if not isinstance(d, dict):
+            return None
+        d = d.get(c)
+    return d
+
+
+def amazon_link(url, tag):
+    p = urllib.parse.urlsplit(url)
+    qs = [(k, v) for k, v in urllib.parse.parse_qsl(p.query) if k != "tag"] + [("tag", tag)]
+    return urllib.parse.urlunsplit((p.scheme, p.netloc, p.path, urllib.parse.urlencode(qs), ""))
+
+
 def amazon_buscar(cfg):
     ac = cfg.get("amazon", {})
     if not ac.get("ligado"):
         return None
-    # A Amazon só libera a API (Creators API) depois de 10 vendas em 30 dias.
-    # Quando liberar, este é o lugar de conectar: credenciais AMAZON_CREDENTIAL_ID / AMAZON_CREDENTIAL_SECRET.
-    log("Amazon: ligada no config, mas a conexão com a Creators API ainda não foi instalada.")
-    return None
+    cid, sec = os.getenv("AMAZON_CREDENTIAL_ID"), os.getenv("AMAZON_CREDENTIAL_SECRET")
+    versao = (os.getenv("AMAZON_VERSION") or "3.1").strip()
+    tag = (os.getenv("AMAZON_TAG") or ac.get("tag") or "").strip()
+    if not cid or not sec:
+        log("Amazon: sem AMAZON_CREDENTIAL_ID / AMAZON_CREDENTIAL_SECRET, pulando.")
+        return None
+    if not tag:
+        log("Amazon: falta a sua tag de associada (ex: coolgirls-20) no config.toml, pulando.")
+        return None
+    try:
+        tok = amazon_token(cid, sec, versao)
+    except Exception as e:
+        log(f"Amazon: não consegui entrar com as credenciais ({e}).")
+        return None
+    auth = f"Bearer {tok}" if versao.startswith("3.") else f"Bearer {tok}, Version {versao}"
+    hdr = {"Authorization": auth, "Content-Type": "application/json", "x-marketplace": AMZ_MARKET}
+    g = cfg["geral"]
+    out, usar_filtro = [], True
+    for termo in g["buscas"]:
+        corpo = {"keywords": termo, "marketplace": AMZ_MARKET, "partnerTag": tag,
+                 "itemCount": 10, "resources": AMZ_RECURSOS}
+        if ac.get("indice"):
+            corpo["searchIndex"] = ac["indice"]
+        if usar_filtro:
+            corpo["minSavingPercent"] = int(g["desconto_minimo"])
+        try:
+            r = http("POST", AMZ_API, headers=hdr, data=json.dumps(corpo), tentativas=2)
+        except Exception as e:
+            if usar_filtro and "HTTP 400" in str(e):
+                usar_filtro = False  # a API não aceitou o filtro de desconto: segue sem ele
+                corpo.pop("minSavingPercent", None)
+                try:
+                    r = http("POST", AMZ_API, headers=hdr, data=json.dumps(corpo), tentativas=2)
+                except Exception as e2:
+                    log(f"Amazon ('{termo}'): {e2}")
+                    continue
+            else:
+                log(f"Amazon ('{termo}'): {e}")
+                continue
+        itens = _pega(r, "searchResult", "items") or r.get("items") or []
+        for it in itens:
+            preco = _pega(it, "offersV2", "listings", "price")
+            por = num(_pega(preco, "money", "amount"))
+            url = it.get("detailPageURL")
+            if not por or not url:
+                continue
+            de = num(_pega(preco, "savingBasis", "money", "amount"))
+            off = int(num(_pega(preco, "savings", "percentage")) or 0)
+            if not off and de and de > por:
+                off = round((de - por) / de * 100)
+            out.append({
+                "id": f"amz-{it.get('asin')}",
+                "loja": "amz",
+                "titulo": (_pega(it, "itemInfo", "title", "displayValue") or "").strip(),
+                "de": de if de and de > por else None, "por": por, "off": off,
+                "img": _pega(it, "images", "primary", "large", "url") or "",
+                "link": amazon_link(url, tag),
+                "vendedor": _pega(it, "offersV2", "listings", "merchantInfo", "name") or "",
+                "oficial": False, "nota": None, "vendidos": 0, "parc": "",
+            })
+        time.sleep(1.1)  # a Amazon aceita ~1 pedido por segundo
+    log(f"Amazon: {len(out)} produtos recebidos.")
+    return out
 
 
 # ───────────────────────── FILTRO + MENSAGEM ─────────────────────────
