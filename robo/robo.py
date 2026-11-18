@@ -63,14 +63,25 @@ def sem_acento(s):
     return "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
 
 
-CATEGORIAS = [
-    ("Kits e presentes", ["kit ", "kit-", "estojo", "presente", "combo"]),
-    ("Perfumes", ["perfume", "eau de", "body splash", "colonia", "deo parfum", "edp", "edt"]),
-    ("Cabelo", ["shampoo", "condicionador", "capilar", "cabelo", "leave-in", "leave in", "mascara de hidratacao", "finalizador", "secador", "chapinha", "babyliss"]),
-    ("Unhas", ["esmalte", "unha", "gel uv", "cabine led", "removedor"]),
-    ("Maquiagem", ["batom", "base ", "corretivo", "rimel", "mascara de cilios", "cilios", "sombra", "paleta", "blush", "iluminador", "delineador", "gloss", "lip", "po compacto", "primer", "pincel", "esponja", "maquiagem"]),
-    ("Skincare", ["serum", "facial", "rosto", "protetor solar", "fps", "acido", "vitamina c", "niacinamida", "retinol", "hidratante", "tonico", "essence", "ampoule", "sabonete facial", "skincare", "cosrx", "anua", "skin1004", "beauty of joseon", "centella", "snail", "olheiras", "anti-idade", "antissinais"]),
-    ("Corpo e banho", ["corporal", "corpo", "banho", "sabonete", "desodorante", "oleo", "esfoliante", "locao", "manteiga"]),
+CATEGORIAS = [  # a ordem importa: a primeira lista que bater decide
+    ("Kits e presentes", ["kit ", "kit-", "kit:", "estojo", "presente", "combo", "conjunto", "trial kit", "travel kit", "collection"]),
+    ("Perfumes", ["perfume", "eau de", "body splash", "colonia", "deo parfum", "edp", "edt", "fragrancia"]),
+    ("Cabelo", ["shampoo", "condicionador", "capilar", "cabelo", "hair", "leave-in", "leave in", "finalizador", "matiz", "cacho",
+                "secador", "chapinha", "babyliss", "escova", "progressiva", "tonalizante", "coloracao", "tintura", "reparador de pontas", "wella", "amend", "marula", "oleo nutritivo"]),
+    ("Unhas", ["esmalte", "unha", "nail", "gel uv", "cabine led", "removedor"]),
+    ("Maquiagem", ["batom", "lipstick", "lip tint", "tint", "gloss", "lip ", "base ", "foundation", "cushion", "bb cream", "cc cream",
+                   "corretivo", "concealer", "rimel", "cilios", "lash", "mascara de cilio", "sombra", "paleta", "eyeshadow", "blush",
+                   "iluminador", "highlighter", "delineador", "eyeliner", "po compacto", "powder", "primer", "finisher", "pincel",
+                   "esponja", "maquiagem", "makeup", "contorno", "sobrancelha", "brow"]),
+    ("Corpo e banho", ["corporal", "corpo", "body", "desodorante", "deodorant", "banho", "esfoliante corporal", "locao", "lotion",
+                       "manteiga", "oleo corporal", "sabonete liquido", "sabonete em barra", "intimo"]),
+    ("Skincare", ["serum", "facial", "rosto", "protetor solar", "fps", "spf", "sun", "acido", "acid", "vitamina c", "vita c",
+                  "niacinamida", "niacinamide", "retinol", "retinal", "hidratante", "tonico", "toner", "essence", "essencia",
+                  "ampoule", "ampola", "mask", "mascara facial", "folha de mascara", "sheet", "pad", "patch", "cream", "creme",
+                  "cleanser", "cleansing", "limpeza", "foam", "espuma", "gel de limpeza", "mist", "peeling", "booster", "pdrn",
+                  "collagen", "colageno", "centella", "cica", "snail", "pore", "poro", "olheiras", "eye", "olhos", "anti-idade",
+                  "antissinais", "skincare", "skin care", "cosrx", "anua", "skin1004", "beauty of joseon", "medicube", "numbuzin",
+                  "abib", "celimax", "biodance", "tirtir", "laneige", "missha", "dr.althea", "aestura", "glutathione", "barrier"]),
 ]
 
 

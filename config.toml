@@ -28,7 +28,8 @@ buscas = [
 ]
 
 # Produtos com estas palavras no nome nunca entram.
-palavras_proibidas = ["réplica", "replica", "inspirado", "contratipo", "usado", "amostra grátis"]
+palavras_proibidas = ["réplica", "replica", "inspirado", "contratipo", "usado", "amostra grátis",
+  "automotiv", "pneu", "carro", "moto ", "pet ", "cachorro", "gato", "ração"]
 
 # ─────────────────────────────────────────────
 [shopee]
