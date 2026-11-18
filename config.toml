@@ -60,5 +60,5 @@ so_full = false                    # true = só produtos com entrega Full
 # ─────────────────────────────────────────────
 [amazon]
 ligado = true
-tag = ""                           # seu ID de associada (termina em -20), ex: "coolgirls-20"
+tag = "jacquednvn-20"              # seu ID de associada (termina em -20), ex: "coolgirls-20"
 indice = ""                        # opcional: categoria da Amazon pra buscar (vazio = todas)
