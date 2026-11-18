@@ -491,7 +491,24 @@ def ler_cupons(g):
 
 
 # ───────────────────────── PRINCIPAL ─────────────────────────
+CHAVES = ["SHOPEE_APP_ID", "SHOPEE_SECRET", "ML_CLIENT_ID", "ML_CLIENT_SECRET", "ML_REFRESH_TOKEN",
+          "ML_MATT_WORD", "ML_MATT_TOOL", "AMAZON_CREDENTIAL_ID", "AMAZON_CREDENTIAL_SECRET", "AMAZON_VERSION", "AMAZON_TAG"]
+
+
+def limpar_chaves():
+    """Tira espaços, quebras de linha e aspas que às vezes vêm junto quando a gente cola a chave."""
+    for k in CHAVES:
+        v = os.environ.get(k)
+        if v is not None:
+            os.environ[k] = v.strip().strip('"').strip("'").strip()
+    app, sec = os.getenv("SHOPEE_APP_ID") or "", os.getenv("SHOPEE_SECRET") or ""
+    if app or sec:
+        log(f"Shopee: App ID com {len(app)} caracteres ({'só números' if app.isdigit() else 'tem algo além de números'}), "
+            f"senha com {len(sec)} caracteres.")
+
+
 def main():
+    limpar_chaves()
     cfg = tomllib.loads(CONFIG.read_text(encoding="utf-8"))
     g = cfg["geral"]
     sc = cfg.get("shopee", {})
