@@ -113,6 +113,48 @@ def shopee_chamar(app_id, segredo, query):
     return r["data"]
 
 
+def shopee_descobrir_lojas(favs, conhecidos):
+    """Acha o número (shop_id) das lojas favoritas a partir do usuário/nome."""
+    app_id, segredo = os.getenv("SHOPEE_APP_ID"), os.getenv("SHOPEE_SECRET")
+    for l in favs:
+        if int(l.get("shop_id") or 0) > 0:
+            continue
+        chave = (l.get("usuario") or l.get("nome") or "").lower()
+        if chave in conhecidos:
+            l["shop_id"] = conhecidos[chave]
+            continue
+        if not app_id or not segredo:
+            continue
+        busca = l.get("busca") or l.get("nome") or ""
+        alvo = sem_acento(busca).replace(" ", "")
+        usuario = (l.get("usuario") or "").lower()
+        achado = None
+        try:  # 1ª tentativa: busca de lojas
+            q = f"{{shopOfferV2(keyword:{json.dumps(busca, ensure_ascii=False)},limit:30){{nodes{{shopId shopName originalLink}}}}}}"
+            for n in shopee_chamar(app_id, segredo, q)["shopOfferV2"]["nodes"] or []:
+                link = (n.get("originalLink") or "").lower()
+                if (usuario and usuario in link) or alvo in sem_acento(n.get("shopName") or "").replace(" ", ""):
+                    achado = n["shopId"]
+                    break
+        except Exception as e:
+            log(f"Shopee: busca de loja '{busca}' sem sucesso ({e}).")
+        if not achado:  # 2ª tentativa: produtos com o nome da loja
+            try:
+                q = f"{{productOfferV2(keyword:{json.dumps(busca, ensure_ascii=False)},limit:50){{nodes{{shopId shopName}}}}}}"
+                for n in shopee_chamar(app_id, segredo, q)["productOfferV2"]["nodes"] or []:
+                    if alvo in sem_acento(n.get("shopName") or "").replace(" ", ""):
+                        achado = n["shopId"]
+                        break
+            except Exception as e:
+                log(f"Shopee: busca de produtos da loja '{busca}' sem sucesso ({e}).")
+        if achado:
+            l["shop_id"] = int(achado)
+            conhecidos[chave] = int(achado)
+            log(f"Shopee: loja favorita '{l.get('nome')}' encontrada (shop_id {achado}).")
+        else:
+            log(f"Shopee: não achei a loja favorita '{l.get('nome')}'. Coloque o shop_id dela no config.toml.")
+
+
 def shopee_buscar(cfg, favs_ids):
     app_id, segredo = os.getenv("SHOPEE_APP_ID"), os.getenv("SHOPEE_SECRET")
     if not app_id or not segredo:
@@ -350,17 +392,22 @@ def main():
     cfg = tomllib.loads(CONFIG.read_text(encoding="utf-8"))
     g = cfg["geral"]
     sc = cfg.get("shopee", {})
-    favs = [l for l in sc.get("lojas_favoritas", []) if int(l.get("shop_id") or 0) > 0]
-    favs_ids = {int(l["shop_id"]) for l in favs}
 
-    antigo, cupons_antigos = {}, []
+    antigo, cupons_antigos, conhecidos = {}, [], {}
     if SAIDA.exists():
         try:
             velho_json = json.loads(SAIDA.read_text(encoding="utf-8"))
             antigo = {o["id"]: o for o in velho_json.get("ofertas", [])}
             cupons_antigos = velho_json.get("cupons", [])
+            conhecidos = velho_json.get("lojas_conhecidas", {}) or {}
         except Exception:
             log("ofertas.json antigo ilegível; começando do zero.")
+
+    todas_favs = sc.get("lojas_favoritas", [])
+    if sc.get("ligado"):
+        shopee_descobrir_lojas(todas_favs, conhecidos)
+    favs = [l for l in todas_favs if int(l.get("shop_id") or 0) > 0]
+    favs_ids = {int(l["shop_id"]) for l in favs}
     cupons = ler_cupons(g)
     if cupons is None:
         cupons = cupons_antigos
@@ -408,6 +455,7 @@ def main():
         "tiktok": g.get("tiktok", ""),
         "cupons": cupons,
         "lojas_favoritas": [{"nome": l["nome"], "shop_id": int(l["shop_id"])} for l in favs],
+        "lojas_conhecidas": conhecidos,
         "fontes": {k: (v is not None) for k, v in fontes.items()},
         "ofertas": lista,
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

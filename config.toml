@@ -7,8 +7,8 @@
 [geral]
 nome_do_grupo = "COOL GIRLS STUFF"
 link_do_grupo = ""                 # ex: "https://chat.whatsapp.com/xxxx" (vai no fim das mensagens)
-instagram = ""                     # ex: "https://instagram.com/coolgirlsstuff" (ícone no topo do site)
-tiktok = ""                        # ex: "https://tiktok.com/@coolgirlsstuff"
+instagram = "https://www.instagram.com/jacque.dnvn/"  # ex: "https://instagram.com/coolgirlsstuff" (ícone no topo do site)
+tiktok = "https://www.tiktok.com/@jacque.dnvn"  # ex: "https://tiktok.com/@coolgirlsstuff"
 desconto_minimo = 20               # só entra oferta com pelo menos X% de desconto
 desconto_minimo_favoritas = 10     # para as suas lojas favoritas o corte é mais baixo
 preco_minimo = 15                  # em reais
@@ -33,17 +33,21 @@ palavras_proibidas = ["réplica", "replica", "inspirado", "contratipo", "usado",
 # ─────────────────────────────────────────────
 [shopee]
 ligado = true
-so_lojas_oficiais = true           # true = só Shopee Mall / lojas oficiais (exceto as favoritas, que sempre entram)
+so_lojas_oficiais = true           # true = só lojas oficiais (Shopee Mall, shopee.com.br/oficial). As favoritas sempre entram.
 
 # Suas lojas favoritas: o robô olha TODAS as ofertas delas, mesmo sem palavra-chave,
-# e elas ganham um destaque "K-beauty" no catálogo.
-# shop_id é o número da loja (eu te ajudo a achar a partir do link).
+# e elas ganham o destaque "K-beauty" no catálogo.
+# usuario = o final do link da loja (shopee.com.br/USUARIO). O robô descobre o número (shop_id) sozinho.
 [[shopee.lojas_favoritas]]
-nome = "Loja coreana 1"
+nome = "Koksara"
+usuario = "koksara.br"
+busca = "koksara"
 shop_id = 0
 
 [[shopee.lojas_favoritas]]
-nome = "Loja coreana 2"
+nome = "Glory of Seoul"
+usuario = "gloryofseoul.br"
+busca = "glory of seoul"
 shop_id = 0
 
 # ─────────────────────────────────────────────
