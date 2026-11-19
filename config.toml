@@ -35,6 +35,7 @@ palavras_proibidas = ["réplica", "replica", "inspirado", "contratipo", "usado",
 [shopee]
 ligado = true
 so_lojas_oficiais = true           # true = só lojas oficiais (Shopee Mall, shopee.com.br/oficial). As favoritas sempre entram.
+cupons_automaticos = true          # link pra página de cupons da Shopee + campanhas da Shopee no site
 
 # Suas lojas favoritas: o robô olha TODAS as ofertas delas, mesmo sem palavra-chave,
 # e elas ganham o destaque "K-beauty" no catálogo.

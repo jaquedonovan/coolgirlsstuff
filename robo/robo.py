@@ -459,6 +459,74 @@ def mensagem(o, g):
 
 
 # ───────────────────────── CUPONS ─────────────────────────
+def cupom_msg(cp, g):
+    L = [f"🎟️ *CUPOM {cp['loja'].upper()}*", "", f"✨ *{cp['titulo']}*"]
+    if cp.get("regra"):
+        L.append(cp["regra"])
+    if cp.get("codigo"):
+        L += ["", f"🔑 Código: *{cp['codigo']}*"]
+    if cp.get("validade"):
+        d = cp["validade"].split("-")
+        L.append(f"📅 Válido até {d[2]}/{d[1]}")
+    L += ["", f"👉 {'Use aqui' if cp.get('codigo') else 'Resgate aqui'}: {cp['link']}", "", g.get("aviso_afiliada", "#publi")]
+    return "\n".join(L)
+
+
+SHOPEE_PAGINA_CUPONS = "https://shopee.com.br/m/cupom-de-desconto"
+CAMPANHA_OK = ["cupom", "cupons", "frete", "beleza", "beauty", "skincare", "maquiagem", "perfum", "cabelo", "natal",
+               "black", "liquida", "12.12", "11.11", "cashback", "presente", "cosmetic", "cuidados"]
+CAMPANHA_FORA = ["eletr", "celular", "smartphone", "game", "pet", "auto", "ferrament", "casa", "cozinha", "moda masc", "infantil", "bebe"]
+
+
+def shopee_cupons(g, fixos):
+    """Cupons automáticos da Shopee: o seu link pra página de cupons + campanhas da Shopee."""
+    app_id, segredo = os.getenv("SHOPEE_APP_ID"), os.getenv("SHOPEE_SECRET")
+    if not app_id or not segredo:
+        return []
+    out = []
+    # 1) link de afiliada da página de cupons (gera uma vez por semana)
+    f = fixos.get("cupons_shopee") or {}
+    if not f.get("url") or AGORA - int(f.get("em", 0)) > 7 * 86400:
+        try:
+            q = ('mutation{generateShortLink(input:{originUrl:%s,subIds:["cupons"]}){shortLink}}'
+                 % json.dumps(SHOPEE_PAGINA_CUPONS))
+            url = shopee_chamar(app_id, segredo, q)["generateShortLink"]["shortLink"]
+            if url and url.startswith("https://"):
+                f = {"url": url, "em": AGORA}
+                fixos["cupons_shopee"] = f
+        except Exception as e:
+            log(f"Shopee: não consegui gerar o link da página de cupons ({e}).")
+    if f.get("url"):
+        out.append({"id": "cp-shopee-central", "loja": "Shopee", "codigo": "",
+                    "titulo": "Cupons do dia na Shopee",
+                    "regra": "Frete grátis, % OFF e cashback: é só clicar em \"Eu quero\" nos cupons que aparecerem",
+                    "link": f["url"], "validade": "", "destaque": True, "ordem": -1, "auto": True})
+    # 2) campanhas da Shopee
+    try:
+        q = "{shopeeOfferV2(sortType:1,page:1,limit:30){nodes{offerName imageUrl offerLink periodStartTime periodEndTime}}}"
+        nodes = shopee_chamar(app_id, segredo, q)["shopeeOfferV2"]["nodes"] or []
+    except Exception as e:
+        log(f"Shopee: campanhas indisponíveis ({e}).")
+        nodes = []
+    for n in nodes:
+        nome = (n.get("offerName") or "").strip()
+        link = n.get("offerLink") or ""
+        fim = int(num(n.get("periodEndTime")) or 0)
+        if not nome or not link.startswith("https://") or (fim and fim < AGORA):
+            continue
+        nn = sem_acento(nome)
+        if not any(k in nn for k in CAMPANHA_OK) or any(k in nn for k in CAMPANHA_FORA):
+            continue
+        val = time.strftime("%Y-%m-%d", time.gmtime(fim - 3 * 3600)) if fim and fim - AGORA < 60 * 86400 else ""
+        out.append({"id": "cp-shp-" + hashlib.sha1(nome.encode()).hexdigest()[:10], "loja": "Shopee", "codigo": "",
+                    "titulo": nome[:90], "regra": "Campanha da Shopee", "link": link, "validade": val,
+                    "destaque": False, "ordem": 500 + len(out), "auto": True})
+    for cp in out:
+        cp["msg"] = cupom_msg(cp, g)
+    log(f"Shopee: {len(out)} cupons/campanhas automáticos.")
+    return out
+
+
 def ler_cupons(g):
     if not CUPONS.exists():
         return []
@@ -485,16 +553,7 @@ def ler_cupons(g):
             "titulo": str(c["titulo"]).strip(), "regra": str(c.get("regra") or "").strip(),
             "link": link, "validade": val, "destaque": bool(c.get("destaque")), "ordem": i,
         }
-        L = [f"🎟️ *CUPOM {cp['loja'].upper()}*", "", f"✨ *{cp['titulo']}*"]
-        if cp["regra"]:
-            L.append(cp["regra"])
-        if cp["codigo"]:
-            L += ["", f"🔑 Código: *{cp['codigo']}*"]
-        if val:
-            d = val.split("-")
-            L.append(f"📅 Válido até {d[2]}/{d[1]}")
-        L += ["", f"👉 {'Use aqui' if cp['codigo'] else 'Resgate aqui'}: {link}", "", g.get("aviso_afiliada", "#publi")]
-        cp["msg"] = "\n".join(L)
+        cp["msg"] = cupom_msg(cp, g)
         out.append(cp)
     out.sort(key=lambda c: (not c["destaque"], c["ordem"]))
     log(f"Cupons: {len(out)} válidos.")
@@ -524,13 +583,14 @@ def main():
     g = cfg["geral"]
     sc = cfg.get("shopee", {})
 
-    antigo, cupons_antigos, conhecidos = {}, [], {}
+    antigo, cupons_antigos, conhecidos, fixos = {}, [], {}, {}
     if SAIDA.exists():
         try:
             velho_json = json.loads(SAIDA.read_text(encoding="utf-8"))
             antigo = {o["id"]: o for o in velho_json.get("ofertas", [])}
             cupons_antigos = velho_json.get("cupons", [])
             conhecidos = velho_json.get("lojas_conhecidas", {}) or {}
+            fixos = velho_json.get("links_fixos", {}) or {}
         except Exception:
             log("ofertas.json antigo ilegível; começando do zero.")
 
@@ -541,7 +601,11 @@ def main():
     favs_ids = {int(l["shop_id"]) for l in favs}
     cupons = ler_cupons(g)
     if cupons is None:
-        cupons = cupons_antigos
+        cupons = [c for c in cupons_antigos if not c.get("auto")]
+    if sc.get("ligado") and sc.get("cupons_automaticos", True):
+        manuais = {c["id"] for c in cupons}
+        cupons += [c for c in shopee_cupons(g, fixos) if c["id"] not in manuais]
+    cupons.sort(key=lambda c: (not c.get("destaque"), c.get("ordem", 0)))
 
     fontes = {
         "shopee": shopee_buscar(cfg, favs_ids) if sc.get("ligado") else None,
@@ -587,6 +651,7 @@ def main():
         "cupons": cupons,
         "lojas_favoritas": [{"nome": l["nome"], "shop_id": int(l["shop_id"])} for l in favs],
         "lojas_conhecidas": conhecidos,
+        "links_fixos": fixos,
         "fontes": {k: (v is not None) for k, v in fontes.items()},
         "ofertas": lista,
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

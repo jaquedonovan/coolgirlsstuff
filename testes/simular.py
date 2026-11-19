@@ -147,3 +147,36 @@ assert res and res[0]["id"] == "amz-B0TESTE" and res[0]["off"] == 40 and res[0][
 assert "tag=coolgirls-20" in res[0]["link"] and "outra-20" not in res[0]["link"], res[0]["link"]
 assert "minSavingPercent" not in pedidos[-1]   # caiu pro modo sem filtro depois do 400
 print("AMAZON OK ✓")
+
+# ───── Cupons automáticos da Shopee ─────
+os.environ.update(SHOPEE_APP_ID="123", SHOPEE_SECRET="abc")
+agora = robo.AGORA
+def cup_falso(method, url, *, headers=None, data=None, **k):
+    q = json.loads(data)["query"]
+    if "generateShortLink" in q:
+        assert "cupom-de-desconto" in q
+        return {"data": {"generateShortLink": {"shortLink": "https://s.shopee.com.br/CUPONS1"}}}
+    if "shopeeOfferV2" in q:
+        return {"data": {"shopeeOfferV2": {"nodes": [
+            {"offerName": "Cupons de Natal Shopee", "offerLink": "https://s.shopee.com.br/NATAL", "periodEndTime": agora + 5 * 86400},
+            {"offerName": "Eletrônicos em oferta", "offerLink": "https://s.shopee.com.br/ELET", "periodEndTime": agora + 5 * 86400},
+            {"offerName": "Campanha velha de cupom", "offerLink": "https://s.shopee.com.br/OLD", "periodEndTime": agora - 10},
+            {"offerName": "Skincare Week", "offerLink": "https://s.shopee.com.br/SKIN", "periodEndTime": 0}]}}}
+    raise AssertionError(q)
+robo.http = cup_falso
+fixos = {}
+cps = robo.shopee_cupons({"aviso_afiliada": "#publi"}, fixos)
+nomes = [c["titulo"] for c in cps]
+assert nomes[0] == "Cupons do dia na Shopee" and cps[0]["link"] == "https://s.shopee.com.br/CUPONS1", nomes
+assert "Cupons de Natal Shopee" in nomes and "Skincare Week" in nomes, nomes
+assert "Campanha velha de cupom" not in nomes   # vencida sai
+assert "Eletrônicos em oferta" not in nomes      # fora de beleza sai
+assert fixos["cupons_shopee"]["url"].endswith("CUPONS1")
+assert "Resgate aqui: https://s.shopee.com.br/CUPONS1" in cps[0]["msg"]
+# segunda vez não gera o link de novo (usa o guardado)
+def sem_link(method, url, *, data=None, **k):
+    q = json.loads(data)["query"]; assert "generateShortLink" not in q
+    return {"data": {"shopeeOfferV2": {"nodes": []}}}
+robo.http = sem_link
+assert robo.shopee_cupons({"aviso_afiliada": "#publi"}, fixos)[0]["id"] == "cp-shopee-central"
+print("CUPONS SHOPEE OK ✓")
