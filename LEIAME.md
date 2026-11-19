@@ -112,6 +112,20 @@ Abra o `config.toml` aqui no GitHub (ícone de lápis), mude e clique em **Commi
 
 5. No `config.toml`, em `[amazon]`, coloque a sua tag de associada em `tag` (ex.: `"coolgirls-20"`).
 
+## Rakuten Advertising
+1. Entre no **Developer Portal** da Rakuten (developers.rakutenadvertising.com) com o mesmo login do painel de afiliada.
+2. Inscreva-se nas APIs **Product Search** e **Coupon Feed**.
+3. Copie o **Client ID** e o **Client Secret**, e pegue o seu **SID** (o número do seu site/conta, com uns 7 dígitos).
+4. Crie os Secrets:
+
+| Nome | O que colar |
+|---|---|
+| `RAKUTEN_CLIENT_ID` | Client ID |
+| `RAKUTEN_CLIENT_SECRET` | Client Secret |
+| `RAKUTEN_SID` | o seu SID |
+
+O robô só mostra produtos e cupons das lojas que já aprovaram você na Rakuten.
+
 ## Para testar no computador (opcional)
 ```
 python testes/simular.py

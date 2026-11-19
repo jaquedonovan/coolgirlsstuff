@@ -262,7 +262,9 @@ function setCat(c){cat=c;shown=48;document.querySelectorAll("#chips .chip").forE
 
 $("#chips").innerHTML=["",...CATS].map(c=>`<button class="chip${c===""?" on":""}${c==="K-beauty"?" k":""}" data-c="${esc(c)}" type="button">${c||"Todas"}</button>`).join("");
 $("#chips").onclick=e=>{const b=e.target.closest(".chip");if(b){setCat(b.dataset.c);render()}};
-$("#fStore").innerHTML=`<option value="">Todas as lojas</option>`+Object.entries(LOJA).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+function fillStores(){const ks=[...new Set(data.ofertas.map(o=>o.loja))];const all=[...new Set([...Object.keys(LOJA),...ks])].filter(k=>ks.includes(k)||!data.ofertas.length);
+  $("#fStore").innerHTML=`<option value="">Todas as lojas</option>`+all.map(k=>`<option value="${esc(k)}">${esc(LOJA[k]||k)}</option>`).join("");$("#fStore").value=storeF}
+fillStores();
 $("#fStore").oninput=()=>{storeF=$("#fStore").value;shown=48;render()};
 ["#q","#fSort"].forEach(s=>$(s).addEventListener("input",()=>{shown=48;render()}));
 $("#more").onclick=()=>{shown+=48;render()};
@@ -330,7 +332,7 @@ let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on
 /* ---------- dados ---------- */
 async function load(){
   try{const r=await fetch("ofertas.json?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;data=await r.json();data.ofertas=data.ofertas||[];data.cupons=data.cupons||[];failed=false}catch(e){failed=true}
-  loaded=true;
+  loaded=true;fillStores();
   if(/^https:\/\//.test(data.link_do_grupo||"")){$("#joinTop").href=data.link_do_grupo;$("#groupbar").hidden=false}
   $("#social").innerHTML=[["Instagram",data.instagram],["TikTok",data.tiktok]].filter(([,u])=>/^https:\/\//.test(u||"")).map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join("");
   $("#liveTxt").textContent=data.atualizado_em?`Atualizado ${ago(data.atualizado_em)}`:(failed?"Sem conexão":"Ligando o robô");

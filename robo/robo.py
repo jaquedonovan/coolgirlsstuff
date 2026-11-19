@@ -17,6 +17,8 @@ import sys
 import time
 import tomllib
 import unicodedata
+import base64
+import xml.etree.ElementTree as ET
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -36,7 +38,7 @@ def log(*a):
 
 
 # ───────────────────────── HTTP ─────────────────────────
-def http(method, url, *, headers=None, data=None, tentativas=3, timeout=25):
+def http(method, url, *, headers=None, data=None, tentativas=3, timeout=25, texto=False):
     body = None
     if data is not None:
         body = data if isinstance(data, bytes) else data.encode()
@@ -46,7 +48,10 @@ def http(method, url, *, headers=None, data=None, tentativas=3, timeout=25):
         req.add_header("User-Agent", "CoolGirlsStuffBot/1.0")
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                return json.loads(r.read().decode() or "{}")
+                corpo = r.read().decode("utf-8", "replace")
+                if texto:
+                    return corpo
+                return json.loads(corpo or "{}")
         except urllib.error.HTTPError as e:
             txt = e.read().decode(errors="replace")[:300]
             ultimo = RuntimeError(f"HTTP {e.code} em {url.split('?')[0]}: {txt}")
@@ -415,6 +420,116 @@ def amazon_buscar(cfg):
     return out
 
 
+# ───────────────────────── RAKUTEN ADVERTISING ─────────────────────────
+RKT_API = "https://api.linksynergy.com"
+
+
+def rakuten_token():
+    cid, sec, sid = (os.getenv(k) for k in ("RAKUTEN_CLIENT_ID", "RAKUTEN_CLIENT_SECRET", "RAKUTEN_SID"))
+    if not cid or not sec or not sid:
+        return None
+    chave = base64.b64encode(f"{cid}:{sec}".encode()).decode()
+    corpo = urllib.parse.urlencode({"grant_type": "client_credentials", "scope": sid})
+    ultimo = None
+    for tipo in ("Basic", "Bearer"):  # a Rakuten aceita a chave nos dois formatos, conforme a conta
+        try:
+            r = http("POST", f"{RKT_API}/token", headers={"Authorization": f"{tipo} {chave}",
+                     "Content-Type": "application/x-www-form-urlencoded"}, data=corpo, tentativas=1)
+            if r.get("access_token"):
+                return r["access_token"]
+        except Exception as e:
+            ultimo = e
+    raise RuntimeError(f"login recusado ({ultimo})")
+
+
+def _txt(el, *nomes):
+    for n in nomes:
+        x = el.find(n)
+        if x is not None and (x.text or "").strip():
+            return x.text.strip()
+    return ""
+
+
+def rakuten_xml(tok, caminho, params):
+    url = f"{RKT_API}/{caminho}?{urllib.parse.urlencode(params)}"
+    xml = http("GET", url, headers={"Authorization": f"Bearer {tok}", "Accept": "application/xml"}, texto=True)
+    return ET.fromstring(xml)
+
+
+def rakuten_ligar(cfg):
+    if not cfg.get("rakuten", {}).get("ligado"):
+        return None
+    try:
+        tok = rakuten_token()
+    except Exception as e:
+        log(f"Rakuten: não consegui entrar ({e}).")
+        return None
+    if not tok:
+        log("Rakuten: sem RAKUTEN_CLIENT_ID / RAKUTEN_CLIENT_SECRET / RAKUTEN_SID, pulando.")
+    return tok
+
+
+def rakuten_buscar(cfg, tok):
+    if not tok:
+        return None
+    rc, g = cfg.get("rakuten", {}), cfg["geral"]
+    out = []
+    for termo in g["buscas"][: int(rc.get("maximo_buscas", 8))]:
+        try:
+            raiz = rakuten_xml(tok, "productsearch/1.0", {"keyword": termo, "max": 50})
+        except Exception as e:
+            log(f"Rakuten ('{termo}'): {e}")
+            continue
+        for it in raiz.iter("item"):
+            preco = it.find("price")
+            venda = it.find("saleprice")
+            de = num(preco.text if preco is not None else None)
+            por = num(venda.text if venda is not None else None) or de
+            link = _txt(it, "linkurl")
+            if not por or not link.startswith("http"):
+                continue
+            off = round((de - por) / de * 100) if de and de > por else 0
+            loja = _txt(it, "merchantname") or "Rakuten"
+            out.append({
+                "id": "rkt-" + hashlib.sha1(f"{_txt(it, 'mid')}|{_txt(it, 'sku', 'linkid')}".encode()).hexdigest()[:12],
+                "loja": loja, "titulo": _txt(it, "productname"),
+                "de": de if off else None, "por": por, "off": off,
+                "img": _txt(it, "imageurl").replace("http://", "https://"),
+                "link": link.replace("http://", "https://", 1),
+                "vendedor": loja, "oficial": True, "nota": None, "vendidos": 0, "parc": "",
+            })
+        time.sleep(1.5)
+    log(f"Rakuten: {len(out)} produtos recebidos.")
+    return out
+
+
+def rakuten_cupons(g, tok):
+    if not tok:
+        return []
+    try:
+        raiz = rakuten_xml(tok, "coupon/1.0", {"resultsperpage": 500})
+    except Exception as e:
+        log(f"Rakuten: cupons indisponíveis ({e}).")
+        return []
+    hoje = time.strftime("%Y-%m-%d", time.gmtime(AGORA - 3 * 3600))
+    out = []
+    for i, l in enumerate(raiz.iter("link")):
+        loja = _txt(l, "advertisername")
+        desc = _txt(l, "offerdescription")
+        link = _txt(l, "clickurl").replace("http://", "https://", 1)
+        fim = _txt(l, "offerenddate")[:10]
+        if not loja or not desc or not link.startswith("https://") or (fim and fim < hoje):
+            continue
+        cp = {"id": "cp-rkt-" + hashlib.sha1(f"{loja}|{_txt(l, 'couponcode')}|{desc}".encode()).hexdigest()[:10],
+              "loja": loja, "codigo": _txt(l, "couponcode").upper(), "titulo": desc[:90],
+              "regra": _txt(l, "couponrestriction")[:120], "link": link,
+              "validade": fim if fim and fim < "2090" else "", "destaque": False, "ordem": 300 + i, "auto": True}
+        cp["msg"] = cupom_msg(cp, g)
+        out.append(cp)
+    log(f"Rakuten: {len(out)} cupons válidos.")
+    return out
+
+
 # ───────────────────────── FILTRO + MENSAGEM ─────────────────────────
 def passa(o, g, favs_ids, so_oficial_shopee):
     t = sem_acento(o["titulo"])
@@ -437,7 +552,7 @@ NOME_LOJA = {"shopee": "🧡 *SHOPEE*", "ml": "🛒 *MERCADO LIVRE*", "amz": "�
 
 
 def mensagem(o, g):
-    L = [NOME_LOJA[o["loja"]], ""]
+    L = [NOME_LOJA.get(o["loja"], f"🛍️ *{str(o['loja']).upper()}*"), ""]
     if o.get("baixou"):
         L += ["🚨 *BAIXOU AINDA MAIS!*", ""]
     L.append(f"🛍️ *{o['titulo']}*")
@@ -564,7 +679,8 @@ def ler_cupons(g):
 
 # ───────────────────────── PRINCIPAL ─────────────────────────
 CHAVES = ["SHOPEE_APP_ID", "SHOPEE_SECRET", "ML_CLIENT_ID", "ML_CLIENT_SECRET", "ML_REFRESH_TOKEN",
-          "ML_MATT_WORD", "ML_MATT_TOOL", "AMAZON_CREDENTIAL_ID", "AMAZON_CREDENTIAL_SECRET", "AMAZON_VERSION", "AMAZON_TAG"]
+          "ML_MATT_WORD", "ML_MATT_TOOL", "AMAZON_CREDENTIAL_ID", "AMAZON_CREDENTIAL_SECRET", "AMAZON_VERSION", "AMAZON_TAG",
+          "RAKUTEN_CLIENT_ID", "RAKUTEN_CLIENT_SECRET", "RAKUTEN_SID"]
 
 
 def limpar_chaves():
@@ -614,6 +730,11 @@ def main():
         "ml": ml_buscar(cfg) if cfg.get("mercado_livre", {}).get("ligado") else None,
         "amz": amazon_buscar(cfg),
     }
+    rkt_tok = rakuten_ligar(cfg)
+    fontes["rkt"] = rakuten_buscar(cfg, rkt_tok)
+    ja = {c["id"] for c in cupons}
+    cupons += [c for c in rakuten_cupons(g, rkt_tok) if c["id"] not in ja]
+    cupons.sort(key=lambda c: (not c.get("destaque"), c.get("ordem", 0)))
 
     novas = {}
     for loja, lista in fontes.items():
@@ -636,9 +757,10 @@ def main():
     for oid, o in antigo.items():
         if oid in novas:
             continue
-        if o.get("loja") in fontes_ok and o.get("visto_em", 0) < limite:
+        origem = "rkt" if str(oid).startswith("rkt-") else o.get("loja")
+        if origem in fontes_ok and o.get("visto_em", 0) < limite:
             continue
-        if o.get("loja") not in fontes_ok and o.get("visto_em", 0) < AGORA - 72 * 3600:
+        if origem not in fontes_ok and o.get("visto_em", 0) < AGORA - 72 * 3600:
             continue  # fonte fora do ar há 3 dias: limpa
         novas[oid] = o
 

@@ -182,3 +182,31 @@ def sem_link(method, url, *, data=None, **k):
 robo.http = sem_link
 assert robo.shopee_cupons({"aviso_afiliada": "#publi"}, fixos)[0]["id"] == "cp-shopee-central"
 print("CUPONS SHOPEE OK ✓")
+
+# ───── Rakuten (respostas falsas em XML) ─────
+os.environ.update(RAKUTEN_CLIENT_ID="rid", RAKUTEN_CLIENT_SECRET="rsec", RAKUTEN_SID="1234567")
+PROD = """<?xml version="1.0"?><result><item><mid>4321</mid><merchantname>Loja Beleza</merchantname><linkid>99</linkid>
+<sku>ABC1</sku><productname>Sérum Facial Vitamina C 30ml</productname><price currency="BRL">120.00</price>
+<saleprice currency="BRL">72.00</saleprice><linkurl>https://click.linksynergy.com/link?id=x&amp;offerid=1</linkurl>
+<imageurl>http://img.loja/1.jpg</imageurl></item></result>"""
+CUP = """<?xml version="1.0"?><couponfeed><link type="TEXT"><advertisername>Loja Beleza</advertisername>
+<offerdescription>15% OFF em todo o site</offerdescription><offerenddate>2099-12-31</offerenddate><couponcode>bela15</couponcode>
+<couponrestriction>Acima de R$ 100</couponrestriction><clickurl>https://click.linksynergy.com/fs-bin/click?id=x</clickurl></link>
+<link type="TEXT"><advertisername>Loja Velha</advertisername><offerdescription>Vencido</offerdescription>
+<offerenddate>2020-01-01</offerenddate><clickurl>https://click.linksynergy.com/v</clickurl></link></couponfeed>"""
+def rkt_falso(method, url, *, headers=None, data=None, texto=False, **k):
+    if url.endswith("/token"):
+        assert "scope=1234567" in data and headers["Authorization"].startswith("Basic ")
+        return {"access_token": "RTOK"}
+    assert headers["Authorization"] == "Bearer RTOK" and texto
+    return PROD if "productsearch" in url else CUP
+robo.http = rkt_falso
+cfg = robo.tomllib.loads(robo.CONFIG.read_text(encoding="utf-8"))
+cfg.setdefault("rakuten", {})["ligado"] = True
+tok = robo.rakuten_ligar(cfg)
+prods = robo.rakuten_buscar(cfg, tok)
+assert prods and prods[0]["off"] == 40 and prods[0]["loja"] == "Loja Beleza" and prods[0]["img"].startswith("https://"), prods[:1]
+assert "🛍️ *LOJA BELEZA*" in robo.mensagem({**prods[0], "fav": False, "baixou": False}, {"frase_urgencia": "x", "aviso_afiliada": "#publi", "nome_do_grupo": "C"})
+cps = robo.rakuten_cupons({"aviso_afiliada": "#publi"}, tok)
+assert [c["titulo"] for c in cps] == ["15% OFF em todo o site"] and cps[0]["codigo"] == "BELA15", cps
+print("RAKUTEN OK ✓")

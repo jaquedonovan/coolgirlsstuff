@@ -64,3 +64,8 @@ so_full = false                    # true = só produtos com entrega Full
 ligado = true
 tag = "jacquednvn-20"              # seu ID de associada (termina em -20), ex: "coolgirls-20"
 indice = ""                        # opcional: categoria da Amazon pra buscar (vazio = todas)
+
+# ─────────────────────────────────────────────
+[rakuten]
+ligado = true                      # produtos em promoção e cupons das lojas que aprovaram você na Rakuten Advertising
+maximo_buscas = 8                  # quantas palavras de "buscas" usar por rodada (a Rakuten pede calma)
