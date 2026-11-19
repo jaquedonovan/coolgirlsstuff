@@ -1,17 +1,16 @@
 name: Robô de ofertas
 
+# O robô fica "acordado": roda uma rodada a cada 20 minutos por cerca de 5h20
+# e, no fim, chama a si mesmo pra começar o próximo turno. O agendamento abaixo
+# é só um reserva, caso a corrente pare por algum motivo.
 on:
   schedule:
-    - cron: "*/20 * * * *"      # a cada 20 minutos (o GitHub às vezes atrasa alguns minutos)
-  workflow_dispatch:             # botão "Run workflow" pra rodar na hora
-  push:
-    branches: [main]
-    paths: ["config.toml", "cupons.toml", "docs/index.html", "robo/**"]
+    - cron: "17 */4 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+  actions: write
 
 concurrency:
   group: robo
@@ -20,10 +19,7 @@ concurrency:
 jobs:
   rodar:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
 
@@ -31,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Buscar ofertas
+      - name: Rodar a cada 20 minutos
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_SECRET: ${{ secrets.SHOPEE_SECRET }}
@@ -43,29 +39,36 @@ jobs:
           AMAZON_CREDENTIAL_ID: ${{ secrets.AMAZON_CREDENTIAL_ID }}
           AMAZON_CREDENTIAL_SECRET: ${{ secrets.AMAZON_CREDENTIAL_SECRET }}
           AMAZON_VERSION: ${{ secrets.AMAZON_VERSION }}
-        run: python robo/robo.py
-
-      - name: Guardar o novo token do Mercado Livre
-        if: hashFiles('.ml_refresh_token_novo') != ''
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          if [ -n "$GH_TOKEN" ]; then gh secret set ML_REFRESH_TOKEN < .ml_refresh_token_novo; else echo "Falta o Secret GH_PAT (veja o LEIAME)."; fi
-          rm -f .ml_refresh_token_novo
-
-      - name: Salvar ofertas
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ github.token }}
+          RODADAS: "16"           # 16 rodadas x 20 min ≈ 5h20 por turno
+          INTERVALO: "1200"       # segundos entre o início de uma rodada e a próxima
         run: |
           git config user.name "robo-coolgirls"
           git config user.email "robo-coolgirls@users.noreply.github.com"
-          git add docs/ofertas.json
-          if ! git diff --cached --quiet; then
-            git commit -m "ofertas atualizadas" -q
-            git pull --rebase -q && git push -q
-          fi
+          for i in $(seq 1 "$RODADAS"); do
+            inicio=$(date +%s)
+            echo "::group::Rodada $i de $RODADAS ($(TZ=America/Sao_Paulo date '+%d/%m %H:%M'))"
+            git pull -q --rebase || true            # pega mudanças no config.toml e cupons.toml
+            python robo/robo.py || echo "Rodada $i teve erro; tento de novo na próxima."
+            if [ -f .ml_refresh_token_novo ]; then
+              if [ -n "$GH_PAT" ]; then GH_TOKEN="$GH_PAT" gh secret set ML_REFRESH_TOKEN < .ml_refresh_token_novo; fi
+              rm -f .ml_refresh_token_novo
+            fi
+            git add docs/ofertas.json
+            if ! git diff --cached --quiet; then
+              git commit -q -m "ofertas atualizadas"
+              git pull -q --rebase && git push -q && \
+                gh workflow run publicar-site.yml --ref main || echo "Não consegui publicar nesta rodada."
+            fi
+            echo "::endgroup::"
+            [ "$i" -lt "$RODADAS" ] || break
+            espera=$(( INTERVALO - ( $(date +%s) - inicio ) ))
+            if [ "$espera" -gt 0 ]; then sleep "$espera"; fi
+          done
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Começar o próximo turno
+        if: success() || failure()   # se você cancelar a rodada na mão, a corrente para
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run robo.yml --ref main

@@ -1,6 +1,6 @@
 # COOL GIRLS STUFF · robô de ofertas
 
-O robô roda sozinho a cada 20 minutos aqui no GitHub. Ele:
+O robô roda sozinho a cada 20 minutos aqui no GitHub, em turnos de cerca de 5 horas que se emendam um no outro. Ele:
 
 1. procura promoções de beleza na **Shopee** e no **Mercado Livre** (a **Amazon** entra quando você tiver 10 vendas em 30 dias);
 2. filtra pelo que está no arquivo `config.toml` (desconto mínimo, faixa de preço, lojas oficiais, palavras proibidas);
@@ -90,6 +90,10 @@ Abra o `config.toml` aqui no GitHub (ícone de lápis), mude e clique em **Commi
 - `palavras_proibidas`: o que nunca pode aparecer.
 - `link_do_grupo`: o convite do grupo, que vai no fim das mensagens e na barra do topo do site.
 - `instagram` e `tiktok`: os links dos seus perfis, que aparecem no rodapé do site.
+
+## Pausar ou religar o robô
+- **Pausar:** Actions › Robô de ofertas › botão **"…"** no canto direito › **Disable workflow**. Depois cancele a rodada que estiver rodando.
+- **Religar:** no mesmo lugar, **Enable workflow** e depois **Run workflow**.
 
 ## Se algo der errado
 **Actions** › clique na última execução › **Buscar ofertas**. O robô escreve em português o que conseguiu e o que faltou.
