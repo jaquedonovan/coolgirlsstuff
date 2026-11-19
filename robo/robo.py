@@ -510,7 +510,7 @@ def shopee_cupons(g, fixos):
         nodes = []
     for n in nodes:
         nome = re.sub(r"^[\s\-–—•|_.:]+|[\s\-–—•|_.:]+$", "", n.get("offerName") or "").strip()
-        if 0 < len(nome) < 14:
+        if 0 < len(nome) < 10:
             nome = f"Ofertas {nome} na Shopee"
         link = n.get("offerLink") or ""
         fim = int(num(n.get("periodEndTime")) or 0)
