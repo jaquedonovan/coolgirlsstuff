@@ -161,7 +161,8 @@ def cup_falso(method, url, *, headers=None, data=None, **k):
             {"offerName": "Cupons de Natal Shopee", "offerLink": "https://s.shopee.com.br/NATAL", "periodEndTime": agora + 5 * 86400},
             {"offerName": "Eletrônicos em oferta", "offerLink": "https://s.shopee.com.br/ELET", "periodEndTime": agora + 5 * 86400},
             {"offerName": "Campanha velha de cupom", "offerLink": "https://s.shopee.com.br/OLD", "periodEndTime": agora - 10},
-            {"offerName": "Skincare Week", "offerLink": "https://s.shopee.com.br/SKIN", "periodEndTime": 0}]}}}
+            {"offerName": "Skincare Week", "offerLink": "https://s.shopee.com.br/SKIN", "periodEndTime": 0},
+            {"offerName": "- - - Beauty", "offerLink": "https://s.shopee.com.br/BEAU", "periodEndTime": 0}]}}}
     raise AssertionError(q)
 robo.http = cup_falso
 fixos = {}
@@ -171,6 +172,7 @@ assert nomes[0] == "Cupons do dia na Shopee" and cps[0]["link"] == "https://s.sh
 assert "Cupons de Natal Shopee" in nomes and "Skincare Week" in nomes, nomes
 assert "Campanha velha de cupom" not in nomes   # vencida sai
 assert "Eletrônicos em oferta" not in nomes      # fora de beleza sai
+assert "Ofertas Beauty na Shopee" in nomes, nomes
 assert fixos["cupons_shopee"]["url"].endswith("CUPONS1")
 assert "Resgate aqui: https://s.shopee.com.br/CUPONS1" in cps[0]["msg"]
 # segunda vez não gera o link de novo (usa o guardado)

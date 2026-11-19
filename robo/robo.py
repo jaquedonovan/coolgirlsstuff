@@ -509,7 +509,9 @@ def shopee_cupons(g, fixos):
         log(f"Shopee: campanhas indisponíveis ({e}).")
         nodes = []
     for n in nodes:
-        nome = (n.get("offerName") or "").strip()
+        nome = re.sub(r"^[\s\-–—•|_.:]+|[\s\-–—•|_.:]+$", "", n.get("offerName") or "").strip()
+        if 0 < len(nome) < 14:
+            nome = f"Ofertas {nome} na Shopee"
         link = n.get("offerLink") or ""
         fim = int(num(n.get("periodEndTime")) or 0)
         if not nome or not link.startswith("https://") or (fim and fim < AGORA):
