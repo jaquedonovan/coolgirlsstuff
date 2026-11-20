@@ -701,7 +701,7 @@ def main():
     g = cfg["geral"]
     sc = cfg.get("shopee", {})
 
-    antigo, cupons_antigos, conhecidos, fixos = {}, [], {}, {}
+    antigo, cupons_antigos, conhecidos, fixos, memoria = {}, [], {}, {}, {}
     if SAIDA.exists():
         try:
             velho_json = json.loads(SAIDA.read_text(encoding="utf-8"))
@@ -709,6 +709,7 @@ def main():
             cupons_antigos = velho_json.get("cupons", [])
             conhecidos = velho_json.get("lojas_conhecidas", {}) or {}
             fixos = velho_json.get("links_fixos", {}) or {}
+            memoria = velho_json.get("memoria", {}) or {}
         except Exception:
             log("ofertas.json antigo ilegível; começando do zero.")
 
@@ -743,11 +744,17 @@ def main():
                 continue
             o["cat"] = categoria(o["titulo"])
             velho = antigo.get(o["id"])
+            lembra = memoria.get(o["id"])  # [desde, preço] de quando o robô viu a oferta pela última vez
+            desde0 = velho["desde"] if velho else (lembra[0] if lembra else AGORA)
+            preco0 = velho["por"] if velho else (lembra[1] if lembra else None)
             o["visto_em"] = AGORA
-            o["desde"] = velho["desde"] if velho else AGORA
-            o["baixou"] = bool(velho and o["por"] < velho["por"] - 0.009)
+            o["desde"] = desde0
+            # só conta como "baixou" se caiu pelo menos 5% (a Shopee mexe centavos o tempo todo)
+            o["baixou"] = bool(preco0 and o["por"] <= preco0 * 0.95)
             if o["baixou"]:
                 o["desde"] = AGORA  # sobe pro topo como novidade
+            elif velho and velho.get("baixou") and AGORA - velho.get("desde", 0) < 86400:
+                o["baixou"] = True  # mantém a etiqueta por 24h
             o["msg"] = mensagem(o, g)
             novas[o["id"]] = o
 
@@ -764,7 +771,21 @@ def main():
             continue  # fonte fora do ar há 3 dias: limpa
         novas[oid] = o
 
-    lista = sorted(novas.values(), key=lambda o: (o["desde"], o["off"]), reverse=True)[: int(g["maximo_de_ofertas"])]
+    # escolhe as melhores de cada loja (desconto, com bônus pras favoritas) e depois ordena pelas mais novas
+    por_loja = int(g.get("maximo_por_loja", 250))
+    grupos = {}
+    for o in novas.values():
+        grupos.setdefault("rkt" if o["id"].startswith("rkt-") else o["loja"], []).append(o)
+    escolhidas = []
+    for itens in grupos.values():
+        itens.sort(key=lambda o: (o["off"] + (10 if o.get("fav") else 0), o["desde"]), reverse=True)
+        escolhidas += itens[:por_loja]
+    escolhidas.sort(key=lambda o: (o["off"] + (10 if o.get("fav") else 0)), reverse=True)
+    lista = sorted(escolhidas[: int(g["maximo_de_ofertas"])], key=lambda o: (o["desde"], o["off"]), reverse=True)
+    # memória de 10 dias: oferta que sai e volta não aparece como "nova" de novo
+    for o in novas.values():
+        memoria[o["id"]] = [o["desde"], o["por"]]
+    memoria = {k: v for k, v in memoria.items() if v and v[0] > AGORA - 10 * 86400}
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     SAIDA.write_text(json.dumps({
         "atualizado_em": AGORA,
@@ -776,6 +797,7 @@ def main():
         "lojas_favoritas": [{"nome": l["nome"], "shop_id": int(l["shop_id"])} for l in favs],
         "lojas_conhecidas": conhecidos,
         "links_fixos": fixos,
+        "memoria": memoria,
         "fontes": {k: (v is not None) for k, v in fontes.items()},
         "ofertas": lista,
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

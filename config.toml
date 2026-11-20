@@ -15,7 +15,8 @@ preco_minimo = 15                  # em reais
 preco_maximo = 800
 nota_minima = 4.5                  # avaliação mínima do produto (quando a loja informa)
 horas_ate_sair = 24                # oferta que o robô não encontrar mais por X horas sai do catálogo
-maximo_de_ofertas = 300
+maximo_de_ofertas = 600
+maximo_por_loja = 250              # cada loja ocupa no máximo isso, pra nenhuma engolir as outras
 aviso_afiliada = "#publi"
 frase_urgencia = "Essa promoção pode acabar a qualquer momento!"
 
